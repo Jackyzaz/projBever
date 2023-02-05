@@ -8,7 +8,7 @@ function ProtectedRoute({children}) {
     if (!user) {
         return <Navigate to='/' />
     }
-    
+        
     return children;
 }
 
