@@ -1,0 +1,14 @@
+@import "@yaireo/tagify/dist/tagify.css";
+
+body .tagify {
+    margin-bottom: 1em;
+    border-radius: 5px;
+    border: none;
+    --tag-bg: #0D6EFD;
+    --tag-text-color: white;
+    --tag-border-radius: 16px;
+    --tag-text-color--edit: var(--tag-bg);
+    --tag-hover: rgb(13, 110, 215);
+    --tag-remove-btn-color: white;
+  }
+  

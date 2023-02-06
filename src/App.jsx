@@ -9,6 +9,10 @@ import Home from './pages/Home'
 import ReportProblem from './pages/ReportProblem'
 import Signin from './pages/Signin'
 import Signup from './pages/Signup'
+import Test from './pages/test'
+import TagifyWithTemplates from './pages/test'
+import "./styles.scss" // basic styles for this demo
+
 
 function App() {
   return (
@@ -19,6 +23,7 @@ function App() {
             <Route path='/' element={<Home />} />
             <Route path='/signin' element={<Signin />} />
             <Route path='/signup' element={<Signup />} />
+            <Route path='/test' element={<Test />} />
             <Route path='/reportproblem' element={<ProtectedRoute><ReportProblem /></ProtectedRoute>} />
             <Route path='/dashboard' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           </Routes>
