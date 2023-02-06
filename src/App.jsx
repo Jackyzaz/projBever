@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import { AuthContextProvider } from './contexts/AuthContext'
 import Dashboard from './pages/Dashboard'
 import Home from './pages/Home'
+import ReportProblem from './pages/ReportProblem'
 import Signin from './pages/Signin'
 import Signup from './pages/Signup'
 
@@ -15,8 +16,10 @@ function App() {
       <AppNavBar />
         <Container className='mt-5'>
           <Routes>
-            <Route path='/' element={<Signin />} />
+            <Route path='/' element={<Home />} />
+            <Route path='/signin' element={<Signin />} />
             <Route path='/signup' element={<Signup />} />
+            <Route path='/reportproblem' element={<ProtectedRoute><ReportProblem /></ProtectedRoute>} />
             <Route path='/dashboard' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           </Routes>
         </Container>
