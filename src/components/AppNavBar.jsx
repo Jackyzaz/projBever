@@ -3,10 +3,8 @@ import { Navbar, Nav, Container } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { UserAuth } from '../contexts/AuthContext'
 import AuthButton from './AuthButton';
-import ProtectedRoute from './ProtectedRoute';
 
 function AppNavBar() {
-    const {user} = UserAuth();
     
     return (
         <Navbar bg="primary" variant="dark" sticky='top' expand='md' >
