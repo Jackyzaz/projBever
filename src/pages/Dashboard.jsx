@@ -24,11 +24,12 @@ const Dashboard = () => {
       <h1 className='text-center'>Dashboard</h1>
       <div className='mt-3 text-center'>
         <h5>User Email : {user && user.email}</h5>
-        <div classname="mt-5">
+        <div className="mt-3">
         <Button onClick={handleLogout} className="m-2" variant="primary">Sign out</Button>
         <Button as={Link} to="/reportproblem" className="m-2" variant="primary">ProblemReporter</Button>
         </div>
-
+        <hr className='text-center mt-5' ></hr>
+        <h1 className='text-center mt-5 mb-5'>Your Problem Status</h1>
         <ProblemCard />
       </div>
      </>

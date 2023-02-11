@@ -2,7 +2,7 @@ import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react'
 import { Form, Button, Image } from 'react-bootstrap'
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 import Tags from "@yaireo/tagify/dist/react.tagify"
-import { setDoc, doc, collection } from 'firebase/firestore';
+import { setDoc, doc, collection, addDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { UserAuth } from '../contexts/AuthContext'
@@ -74,7 +74,7 @@ function ReportProblem() {
                     setProgress(progress);
                 },
                 (error) => {
-                    console.log(error);
+                    alert(error);
                 },
                 () => {
                     getDownloadURL(uploadTask.snapshot.ref).then((urls) => {
@@ -86,7 +86,7 @@ function ReportProblem() {
         });
 
         Promise.all(promises)
-            .then(() => alert("All images uploaded"))
+            .then(() => {if (Image != []) {alert("All image is upload!")}})
             .catch((err) => console.log(err));
     };
 
@@ -94,16 +94,16 @@ function ReportProblem() {
         event.preventDefault();
         setError('')
         try {
-            await setDoc(doc(problemCollectionRef, `${user.email}`), {
+            await setDoc(doc(problemCollectionRef, problemUUID), {
                 problemUUID,
                 problemName,
                 problemInfo,
                 problemTags,
                 problemRate,
                 imagesURLs,
-                author: { email: user.email },
+                author: { email: user.email, name: user.uid },
             })
-            handleUpload()
+            if (images.length !== 0) handleUpload()
             navigate('/dashboard')
         } catch (err) {
             alert(err.message)
