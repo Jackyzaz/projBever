@@ -2,7 +2,7 @@ import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react'
 import { Form, Button, Image } from 'react-bootstrap'
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 import Tags from "@yaireo/tagify/dist/react.tagify"
-import { setDoc, doc, collection, addDoc } from 'firebase/firestore';
+import { setDoc, doc, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { UserAuth } from '../contexts/AuthContext'
@@ -44,7 +44,7 @@ function ReportProblem() {
         const newImageUrls = [];
         images.forEach((image) => newImageUrls.push(URL.createObjectURL(image)));
         setPreviewImageURLs(newImageUrls);
-        setImagesURLs(newImageUrls)
+        // setImagesURLs(newImageUrls)
     }, [images]);
 
     function onImageChange(e) {
@@ -61,9 +61,10 @@ function ReportProblem() {
 
     const handleUpload = () => {
         const promises = [];
+        const ImageUrls = [];
         images.map((image) => {
             const problemStorageRef = ref(storage, `problems_images/${user && user.email}/${problemUUID}/${image.name}`)
-            const uploadTask = uploadBytesResumable(problemStorageRef, image);  
+            const uploadTask = uploadBytesResumable(problemStorageRef, image);
             promises.push(uploadTask);
             uploadTask.on(
                 "state_changed",
@@ -78,22 +79,29 @@ function ReportProblem() {
                 },
                 () => {
                     getDownloadURL(uploadTask.snapshot.ref).then((urls) => {
-                        // setImagesURLs((prevState) => [...prevState, urls]);s
-                        console.log('File available at', urls)
+                        ImageUrls.push(urls)
+                        console.log("temp urls", ImageUrls);
+                    })
+                    updateDoc(doc(problemCollectionRef, problemUUID), {
+                        imagesURLs: ImageUrls
                     })
                 }
             );
         });
 
         Promise.all(promises)
-            .then(() => {if (Image != []) {alert("All image is upload!")}})
-            .catch((err) => console.log(err));
+        .then(() => { if (Image != []) { alert("All image is upload!") } })
+        .catch((err) => console.log(err));
+        
+        setImagesURLs(ImageUrls);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setError('')
         try {
+            // console.log(imagesURLs)
+            if (images.length !== 0) handleUpload()
             await setDoc(doc(problemCollectionRef, problemUUID), {
                 problemUUID,
                 problemName,
@@ -103,7 +111,6 @@ function ReportProblem() {
                 imagesURLs,
                 author: { email: user.email, name: user.uid },
             })
-            if (images.length !== 0) handleUpload()
             navigate('/dashboard')
         } catch (err) {
             alert(err.message)
