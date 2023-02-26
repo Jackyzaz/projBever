@@ -49,7 +49,7 @@ const ProblemCard = ({ item }) => {
       <Card className='mt-4 box' border={statusBorder(item.status)}>
         <Row>
           <Col sm={3}>
-            <img className='img-fluid rounded-start' src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png'} />
+            <img className='img-fluid rounded-start' src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.teamgroup.co.th/wp-content/themes/consultix/images/no-image-found-360x260.png'} />
           </Col>
           <Col sm={7} className='my-4'>
             <Card.Title className="d-flex justify-content-start">{item.problemName}</Card.Title>
@@ -100,7 +100,7 @@ const ProblemCard = ({ item }) => {
             </Col>
           </Row>
           {item.imagesURLs.map((url, idx) => {
-            return <img key={idx} className='m-auto my-3' src={url} width={300}></img>
+            return <img key={idx} className='mb-3 mr-3' src={url} width={300}></img>
           })}
         </Modal.Body>
           {item.mts.author ? <ResolveMassage item={item} statusForm={statusForm}/> : ''}
@@ -116,28 +116,35 @@ const ResolveMassage = ({item, statusForm}) => {
       <Modal.Body>
         <h4 style={{ 'fontWeight': 'bold' }} className='mb-4'>Resolve from Admin</h4>
         <Row>
-          <Col sm={2}>
+          <Col sm={3}>
             <p>Resolve by </p>
           </Col>
-          <Col sm={10}>
+          <Col sm={9}>
             <p style={{ 'fontWeight': 'bold' }}>{item.mts.author}</p>
           </Col>
         </Row>
         <Row>
-          <Col sm={2}>
+          <Col sm={3}>
             <p>Resolve at</p>
 
           </Col>
-          <Col sm={10}>
+          <Col sm={9}>
             <p style={{ 'fontWeight': 'bold' }}>{item.mts.restime.toDate().toLocaleString()}</p>
           </Col>
         </Row>
         <Row>
-          <Col sm={2}>
-            <p>Status</p>
-
+          <Col sm={3}>
+            <p>Massage from Admin</p>
           </Col>
-          <Col sm={10}>
+          <Col sm={9}>
+            <p style={{ 'fontWeight': 'bold' }}>{item.mts.massage}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col sm={3}>
+            <p>Status</p>
+          </Col>
+          <Col sm={9}>
             <p style={{ 'fontWeight': 'bold' }}>{statusForm(item.status)}</p>
           </Col>
         </Row>
