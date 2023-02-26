@@ -9,6 +9,7 @@ import { db, auth, storage } from '../firebase'
 const Dashboard = () => {
   const { user, logout } = UserAuth();
   const [data, setData] = useState([]);
+  const [searchProblem, setSearchProblem] = useState('');
 
   const navigate = useNavigate();
 
@@ -28,14 +29,15 @@ const Dashboard = () => {
     fetchProblem();
   }, [user])
 
+  
   if (!user.uid) {
     return <h1> Loading </h1>
   }
-
+  
   if (user.isAdmin) {
     return <Navigate to='/admin/dashboard' />
   }
-
+  
   const handleLogout = async () => {
     try {
       await logout()
@@ -46,6 +48,7 @@ const Dashboard = () => {
       console.log(err.message)
     }
   }
+
 
   return (
     <>
@@ -64,14 +67,20 @@ const Dashboard = () => {
           </div>
           <Form>
             <Stack direction="horizontal" gap={3}>
-              <Form.Control border='primary' onChange={(e) => setSearchProblem(e.target.value)} className="me-auto" placeholder="Search By Problem Name" />
+              <Form.Control border='primary' onChange={(e) => {
+                setSearchProblem(e.target.value)
+                console.log(searchProblem)
+              }
+                } value={searchProblem} className="me-auto" placeholder="Search By Problem Name" />
               <div className="vr" />
               <Button onClick={fetchProblem} variant="primary">&#8635;</Button>
             </Stack>
           </Form>
         </div>
 
-        {data?.map((item, index) => {
+        {data?.filter( item => {
+          return item.data().problemName.includes( searchProblem )
+        }).map((item, index) => {
           console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
           return <ProblemCard item={item.data()} key={index} />
         })}

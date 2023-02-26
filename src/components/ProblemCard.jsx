@@ -28,7 +28,22 @@ const ProblemCard = ({ item }) => {
         return 'danger'
     }
   }
-  
+
+  const statusForm = (status) => {
+    switch (status) {
+      case 'wait':
+        return 'Wait for Response'
+      case 'inprogress':
+        return 'In Progress'
+      case 'success':
+        return 'Success'
+      case 'fail':
+        return 'Fail'
+      default:
+        return 'Error'
+    }
+  }
+
   return (
     <div>
       <Card className='mt-4 box' border={statusBorder(item.status)}>
@@ -52,22 +67,83 @@ const ProblemCard = ({ item }) => {
           </Col>
         </Row>
       </Card>
-      <Modal show={show} onHide={handleClose}size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered >
+      <Modal show={show} onHide={handleClose} size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered >
         <Modal.Header closeButton>
-          <Modal.Title style={{'fontWeight':'bold'}}>{item.problemName}</Modal.Title>
+          <Modal.Title style={{ 'fontWeight': 'bold' }}>Problem Info</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Report at <span style={{'fontWeight':'bold'}}>{item.reportDate.toDate().toLocaleString()}</span> by <span style={{'fontWeight':'bold'}}>{item.author.email}</span>
-        <p>Describe <span style={{'fontWeight':'bold'}}>{item.problemInfo}</span></p></Modal.Body>
-          {item.imagesURLs.map((url) => {
-            console.log(url);
-            return <img className='m-auto my-3' src={url} width={300}></img>
+        <Modal.Body>
+          <Row>
+            <Col sm={2}>
+              <p>Problem Name </p>
+
+            </Col>
+            <Col sm={10}>
+              <p style={{ 'fontWeight': 'bold' }}>{item.problemName}</p>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={2}>
+              <p>Report at</p>
+            </Col>
+            <Col sm={10}>
+              <p style={{ 'fontWeight': 'bold' }}>{item.reportDate.toDate().toLocaleString()}</p>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={2}>
+              <p>Describe</p>
+            </Col>
+            <Col sm={10}>
+              <p style={{ 'fontWeight': 'bold' }}>{item.problemInfo}</p>
+            </Col>
+          </Row>
+          {item.imagesURLs.map((url, idx) => {
+            return <img key={idx} className='m-auto my-3' src={url} width={300}></img>
           })}
+        </Modal.Body>
+          {item.mts.author ? <ResolveMassage item={item} statusForm={statusForm}/> : ''}
       </Modal>
     </div>
   )
 }
 
+const ResolveMassage = ({item, statusForm}) => {
+  return (
+    <>
+      <hr className=''></hr>
+      <Modal.Body>
+        <h4 style={{ 'fontWeight': 'bold' }} className='mb-4'>Resolve from Admin</h4>
+        <Row>
+          <Col sm={2}>
+            <p>Resolve by </p>
+          </Col>
+          <Col sm={10}>
+            <p style={{ 'fontWeight': 'bold' }}>{item.mts.author}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col sm={2}>
+            <p>Resolve at</p>
+
+          </Col>
+          <Col sm={10}>
+            <p style={{ 'fontWeight': 'bold' }}>{item.mts.restime.toDate().toLocaleString()}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col sm={2}>
+            <p>Status</p>
+
+          </Col>
+          <Col sm={10}>
+            <p style={{ 'fontWeight': 'bold' }}>{statusForm(item.status)}</p>
+          </Col>
+        </Row>
+      </Modal.Body>
+    </>
+  )
+}
 
 export default ProblemCard

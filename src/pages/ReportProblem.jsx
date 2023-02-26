@@ -124,6 +124,8 @@ function ReportProblem() {
                 problemRate,
                 status: 'wait',
                 imagesURLs: [],
+                costs: [],
+                mts: {},
                 reportDate: Timestamp.fromDate(new Date()),                
                 author: { email: user.email, name: user.uid },
             })

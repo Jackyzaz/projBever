@@ -1,11 +1,23 @@
 import React from 'react'
 import { UserAuth } from '../contexts/AuthContext'
 import { Nav, Navbar, Button } from 'react-bootstrap'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
+
 function AuthButton() {
-    const { user } = UserAuth()
+    const { user, logout } = UserAuth()
+    const navigate = useNavigate()
+    const handleLogout = async () => {
+        try {
+          await logout()
+          navigate('/')
+          console.log('You are logged out')
+        } catch (err) {
+          alert(err.message)
+          console.log(err.message)
+        }
+      }
 
     if (!user) {
         return <Navbar.Collapse className="justify-content-end">
@@ -15,6 +27,7 @@ function AuthButton() {
         return <Navbar.Collapse className="justify-content-end">
             <Navbar.Text>
                 Signed in as: <a href="/dashboard">{user && user.email}</a>
+                <Button onClick={handleLogout} className="m-2" variant="outline-light">Sign out</Button>
             </Navbar.Text>
         </Navbar.Collapse>
     }
