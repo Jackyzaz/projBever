@@ -1,158 +1,71 @@
-import Tags, { MixedTags } from '@yaireo/tagify/dist/react.tagify'
-import { collection, doc, getDocs, query, where, deleteDoc, Timestamp } from 'firebase/firestore'
-import { getDownloadURL, ref } from 'firebase/storage'
-import React, { useEffect, useState } from 'react'
-import { Button, Card, Row, Col, Image, Stack, Form } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import { UserAuth } from '../contexts/AuthContext'
-import { db, auth, storage } from '../firebase'
-import StatusTags from './StatusTags'
+import { MixedTags } from '@yaireo/tagify/dist/react.tagify'
+import { useState } from 'react';
+import { Button, Card, Row, Col, Image, Stack, Form, Modal } from 'react-bootstrap'
+import StatusTags from './StatusTags';
 
-const ProblemCard = () => {
-  const { user } = UserAuth()
-  const userid = user.uid;
+const ProblemCard = ({ item }) => {
+  const [show, setShow] = useState(false);
 
-  const [problemList, setProblemList] = useState([])
-  const [reloadButton, setReloadButton] = useState(0)
-  const [searchProblem, setSearchProblem] = useState('')
-  const [imagestemp, setImagestemp] = useState('')
-  // const testRef = ref(storage, 'problems_images/qwerty@gmail.com/2fc3e949-2fe9-4d4e-b7ec-a670c53e2198/Screenshot 2022-09-22 222116.png')
-  // const urlimg = getDownloadURL(testRef).then((url) => {
-  //   return url
-  // })
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
-  const problemCollectionRef = collection(db, "user_problems")
-  const userProblemRef = query(problemCollectionRef, where("author.name", "==", String(userid)))
-  // const userProblemRef = query(problemCollectionRef, where("problemName", "==", "dw"))
+  let tagifyTag = ''
+  item.problemTags.forEach(element => {
+    tagifyTag = tagifyTag + `[[${JSON.stringify(element)}]]` + ' '
+  });
 
-  const deletePost = async (id) => {
-    const problemDoc = doc(db, "user_problems", id);
-    await deleteDoc(problemDoc);
-    console.log(problemDoc)
-  };
-
-  const fetchProblem = () => {
-    const getPosts = async () => {
-      const data = await getDocs(userProblemRef);
-      setProblemList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-    getPosts();
-    console.log(problemList)
+  const statusBorder = (status) => {
+    switch (status) {
+      case 'wait':
+        return 'primary'
+      case 'inprogress':
+        return 'warning'
+      case 'success':
+        return 'success'
+      case 'fail':
+        return 'danger'
+      default:
+        return 'danger'
+    }
   }
-  useEffect(fetchProblem, [reloadButton]);
-
-  const filteredProblemList = problemList.filter((problem) => {
-    return problem.problemName.includes(searchProblem)
-  })
-
-  // const problemImgfetch = () => {
-  //   let problemImgSrc = []
-  //   const storageRef = ref(storage, 'problems_images/qwerty@gmail.com/2a2c536e-8f9c-4649-9cb8-aec27616b5b8/Cylinder.png')
-  //   getDownloadURL(storageRef).then((link) => { problemImgSrc.push(link) })
-  //   // console.log(`ImageSrc : ${problemImgSrc}`)
-  // }
-
-  // problemImgfetch('problems_images/qwerty@gmail.com/2a2c536e-8f9c-4649-9cb8-aec27616b5b8/Cylinder.png')
-
-  // const tagFetch = () => {
-  //   const Tags = problem.problemTags
-
-  // }
-
+  
   return (
-    <>
-      <div className='my-5'>
-        <div className='d-flex justify-content-center mb-4'>
-          <h1>Your Problem Status</h1>
-        </div>
-        <Form>
-          <Stack direction="horizontal" gap={3}>
-            <Form.Control onChange={(e) => setSearchProblem(e.target.value)} value={searchProblem} className="me-auto" placeholder="Search By Problem Name" />
-            <div className="vr" />
-            <Button onClick={fetchProblem} variant="outline-primary">&#8635;</Button>
-          </Stack>
-        </Form>
-      </div>
+    <div>
+      <Card className='mt-4 box' border={statusBorder(item.status)}>
+        <Row>
+          <Col sm={3}>
+            <img className='img-fluid rounded-start' src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png'} />
+          </Col>
+          <Col sm={7} className='my-4'>
+            <Card.Title className="d-flex justify-content-start">{item.problemName}</Card.Title>
+            <Card.Subtitle className="text-start text-muted">{item.reportDate.toDate().toLocaleString()}</Card.Subtitle>
+            <MixedTags className="my-2 text-start" readOnly value={`${tagifyTag}`} />
+            <Card.Text className="text-start">{item.problemInfo}</Card.Text>
+          </Col>
+          <Col sm={2} className='d-flex my-4 mr-3'>
+            <Stack gap={2} className='mx-4'>
+              <StatusTags status={item.status} />
+              <Button onClick={handleShow} variant={`outline-${statusBorder(item.status)}`} >View Detail</Button>
 
-      {filteredProblemList.map((problem, idx) => {
-        // return (
-        //   <Card className='mt-3 rounded-3' key={idx} >
-        //     <Card.Body>
-        //       <Card.Img variant='top' src={'/'}></Card.Img>
-        //       <Card.Title className='align-items-start'>{problem.problemName}</Card.Title>
-        //       <div className="post">
-        //         <div className="postHeader">
-        //           <div className="deletePost">
-        //             {user && problem.author.name === user.uid && (
-        //               <Button onClick={() => { deletePost(problem.id) }}>
-        //                 Delete Problem
-        //               </Button>
-        //             )}
-        //           </div>
-        //         </div>
-        //         <div className="postTextContainer"> {problem.postText} </div>
-        //         <p>ProblemUUID : {problem.problemUUID}</p>
-        //         <p>@{problem.author.name}</p>
-        //         <p>Email : {problem.author.email}</p>
-        //       </div>
-        //     </Card.Body>
-        //   </Card>
-        // );
+            </Stack>
 
-        const reportTimestamp = problem.reportDate
-        const dateTemp = reportTimestamp * 1000
-        const displayDate = new Date(problem.reportDate * 1000).toUTCString()
-
-        let myNumberOfStr = ''
-        problem.problemTags.forEach(element => {
-          myNumberOfStr = myNumberOfStr + `[[${JSON.stringify(element)}]]` + ' '
-        });
-
-        const statusBorder = (status) => {
-          switch (status) {
-            case 'wait':
-              return 'primary'
-              break
-            case 'inprogress':
-              return 'warning'
-              break
-            case 'success':
-              return 'success'
-              break
-            case 'fail':
-              return 'danger'
-              break
-            default:
-              return 'danger'
-          }
-        }
-
-
-        return (
-          <Card className='mt-4 box' key={idx} border={statusBorder(problem.status)}>
-            <Row>
-              <Col sm={3}>
-                {/* <Card.Img className="img-fluid rounded-start" src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80" /> */}
-                <img className='img-fluid rounded-start' src={(problem.imagesURLs[0] !== undefined) ? problem.imagesURLs[0] : 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png'} />
-              </Col>
-              <Col sm={7} className='my-4'>
-                <Card.Title className="d-flex justify-content-start">{problem.problemName}</Card.Title>
-                <Card.Subtitle className="text-start text-muted">{reportTimestamp.toDate().toLocaleString()}</Card.Subtitle>
-                <MixedTags className="my-2 text-start" readOnly value={`${myNumberOfStr}`} />
-                <Card.Text className="text-start">{problem.problemInfo}</Card.Text>
-              </Col>
-              <Col sm={2} className='d-flex my-4 mr-3'>
-                <Stack gap={2} className='mx-4'>
-                  <StatusTags status={problem.status} />
-                  <Button as={Link} to={`/problem/${problem.problemUUID}`} variant={`outline-${statusBorder(problem.status)}`} >View Detail</Button>
-                </Stack>
-              </Col>
-            </Row>
-          </Card>
-        )
-      })
-      }
-    </>
+          </Col>
+        </Row>
+      </Card>
+      <Modal show={show} onHide={handleClose}size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered >
+        <Modal.Header closeButton>
+          <Modal.Title style={{'fontWeight':'bold'}}>{item.problemName}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Report at <span style={{'fontWeight':'bold'}}>{item.reportDate.toDate().toLocaleString()}</span> by <span style={{'fontWeight':'bold'}}>{item.author.email}</span>
+        <p>Describe <span style={{'fontWeight':'bold'}}>{item.problemInfo}</span></p></Modal.Body>
+          {item.imagesURLs.map((url) => {
+            console.log(url);
+            return <img className='m-auto my-3' src={url} width={300}></img>
+          })}
+      </Modal>
+    </div>
   )
 }
 

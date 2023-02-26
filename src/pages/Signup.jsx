@@ -29,15 +29,14 @@ const Signup = () => {
       <Form className='d-grid' onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
-          <Form.Control onChange={(event) => setEmail(event.target.value)} type="email" placeholder="Enter email" />
+          <Form.Control  onChange={(event) => setEmail(event.target.value)} type="email" placeholder="Enter email" />
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control onChange={(event) => setPassword(event.target.value)} type="password" placeholder="Password" />
         </Form.Group>
         <Button className="mt-3" variant="primary" type="submit">Sign Up</Button>
-      <p className='text-center mt-4'>Already have an account? <Link to='/'>Sign In</Link></p>
-
+      <p className='text-center mt-4'>Already have an account? <Link to='/signin'>Sign In</Link></p>
       </Form>
     </Container>
   )
