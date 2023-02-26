@@ -4,7 +4,7 @@ import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 import Tags from "@yaireo/tagify/dist/react.tagify"
 import { setDoc, doc, collection, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db, storage } from '../firebase';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { UserAuth } from '../contexts/AuthContext'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { v4 } from "uuid";
@@ -27,6 +27,15 @@ function ReportProblem() {
     const [imagesURLs, setImagesURLs] = useState([]);
     const [previewImageURLs, setPreviewImageURLs] = useState([]);
 
+
+
+    if (!user.uid) {
+        return <h1> Loading </h1>
+      }
+    
+    if (user.isAdmin) {
+        return <Navigate to='/admin/dashboard' />
+      }
 
     // on tag add/edit/remove
 
@@ -113,7 +122,7 @@ function ReportProblem() {
                 problemInfo,
                 problemTags,
                 problemRate,
-                status: 'error',
+                status: 'wait',
                 imagesURLs: [],
                 reportDate: Timestamp.fromDate(new Date()),                
                 author: { email: user.email, name: user.uid },

@@ -3,7 +3,6 @@ import { Button } from 'react-bootstrap'
 
 const StatusTags = (props) => {
 
-  console.log(props.status)
   // if (props.status === 'wait') {
   //   return (
   //     <Button variant='warning'>wait</Button>
@@ -14,7 +13,7 @@ const StatusTags = (props) => {
 
   switch (props.status) {
     case 'wait':
-      return <Button variant='outline-warning'>Waiting for Response</Button>
+      return <Button variant='primary'>Waiting for Response</Button>
       break
     case 'inprogress':
       return <Button variant='warning'>In Progress</Button>
@@ -23,7 +22,7 @@ const StatusTags = (props) => {
       return <Button variant='success'>Success</Button>
       break
     case 'fail':
-      return <Button variant='danger'>Fail</Button>
+      return <Button variant='danger'>Rejected</Button>
       break
     default:
       return <Button variant='danger'>Error</Button>

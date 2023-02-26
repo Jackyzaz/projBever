@@ -7,6 +7,8 @@ import {
 } from 'firebase/auth'
 import { auth } from "../firebase";
 
+const admin_uid = ['srShevVGRvYJSqPOQExe8n5k9tC3']
+
 const UserContext = createContext()
 
 export const AuthContextProvider = ({children}) => {
@@ -26,7 +28,10 @@ export const AuthContextProvider = ({children}) => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            console.log(currentUser)
+            if (currentUser) {
+                currentUser.isAdmin = admin_uid.includes(currentUser.uid)
+                console.log(currentUser)
+            }
             setUser(currentUser)
         })
         return () => {

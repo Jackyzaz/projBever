@@ -3,6 +3,7 @@ import { collection, doc, getDocs, query, where, deleteDoc, Timestamp } from 'fi
 import { getDownloadURL, ref } from 'firebase/storage'
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Row, Col, Image, Stack, Form } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import { UserAuth } from '../contexts/AuthContext'
 import { db, auth, storage } from '../firebase'
 import StatusTags from './StatusTags'
@@ -61,12 +62,12 @@ const ProblemCard = () => {
   return (
     <>
       <div className='my-5'>
-        <div className='d-flex justify-content-center mb-3'>
+        <div className='d-flex justify-content-center mb-4'>
           <h1>Your Problem Status</h1>
         </div>
         <Form>
           <Stack direction="horizontal" gap={3}>
-            <Form.Control onChange={(e) => setSearchProblem(e.target.value)} value={searchProblem} className="me-auto" placeholder="Search by problem name" />
+            <Form.Control onChange={(e) => setSearchProblem(e.target.value)} value={searchProblem} className="me-auto" placeholder="Search By Problem Name" />
             <div className="vr" />
             <Button onClick={fetchProblem} variant="outline-primary">&#8635;</Button>
           </Stack>
@@ -106,9 +107,29 @@ const ProblemCard = () => {
         problem.problemTags.forEach(element => {
           myNumberOfStr = myNumberOfStr + `[[${JSON.stringify(element)}]]` + ' '
         });
-        
+
+        const statusBorder = (status) => {
+          switch (status) {
+            case 'wait':
+              return 'primary'
+              break
+            case 'inprogress':
+              return 'warning'
+              break
+            case 'success':
+              return 'success'
+              break
+            case 'fail':
+              return 'danger'
+              break
+            default:
+              return 'danger'
+          }
+        }
+
+
         return (
-          <Card className='mt-3 box' key={idx}>
+          <Card className='mt-4 box' key={idx} border={statusBorder(problem.status)}>
             <Row>
               <Col sm={3}>
                 {/* <Card.Img className="img-fluid rounded-start" src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8&w=1000&q=80" /> */}
@@ -122,8 +143,8 @@ const ProblemCard = () => {
               </Col>
               <Col sm={2} className='d-flex my-4 mr-3'>
                 <Stack gap={2} className='mx-4'>
-                <StatusTags status={problem.status}/>
-                <Button>View Detail</Button>
+                  <StatusTags status={problem.status} />
+                  <Button as={Link} to={`/problem/${problem.problemUUID}`} variant={`outline-${statusBorder(problem.status)}`} >View Detail</Button>
                 </Stack>
               </Col>
             </Row>
