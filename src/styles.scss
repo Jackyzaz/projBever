@@ -1,14 +1,21 @@
 @import "@yaireo/tagify/dist/tagify.css";
 
 body .tagify {
-    margin-bottom: 1em;
-    border-radius: 5px;
-    border: none;
-    --tag-bg: #0D6EFD;
-    --tag-text-color: white;
-    --tag-border-radius: 16px;
-    --tag-text-color--edit: var(--tag-bg);
-    --tag-hover: rgb(13, 110, 215);
-    --tag-remove-btn-color: white;
-  }
-  
+  width: 100%;
+  border: none;
+  --tag-bg: #0D6EFD;
+  --tag-text-color: white;
+  --tag-border-radius: 5px;
+  --tag-text-color--edit: var(--tag-bg);
+  --tag-hover: #0D6EFD;
+  --tag-remove-btn-color: white;
+}
+
+body .tagify--mix .tagify__input {
+  padding: 0px;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  line-height: 1.5;
+  display: block
+}

@@ -29,7 +29,6 @@ const Dashboard = () => {
         <Button as={Link} to="/reportproblem" className="m-2" variant="primary">ProblemReporter</Button>
         </div>
         <hr className='text-center mt-5' ></hr>
-        <h1 className='text-center mt-5 mb-5'>Your Problem Status</h1>
         <ProblemCard />
       </div>
      </>

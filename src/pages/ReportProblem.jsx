@@ -2,7 +2,7 @@ import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react'
 import { Form, Button, Image } from 'react-bootstrap'
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 import Tags from "@yaireo/tagify/dist/react.tagify"
-import { setDoc, doc, collection, addDoc, updateDoc } from 'firebase/firestore';
+import { setDoc, doc, collection, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { UserAuth } from '../contexts/AuthContext'
@@ -41,10 +41,14 @@ function ReportProblem() {
 
     useEffect(() => {
         if (images.length < 1) return;
-        const newImageUrls = [];
-        images.forEach((image) => newImageUrls.push(URL.createObjectURL(image)));
-        setPreviewImageURLs(newImageUrls);
-        // setImagesURLs(newImageUrls)
+        const previewImageUrls = [];
+        const tempImageUrls = [];
+        images.forEach((image) => {previewImageUrls.push(URL.createObjectURL(image))
+            tempImageUrls.push(`problems_images/${user && user.email}/${problemUUID}/${image.name}`)
+            console.log(tempImageUrls)
+        });
+        setPreviewImageURLs(previewImageUrls);
+        // setImagesURLs(tempImageUrls)
     }, [images]);
 
     function onImageChange(e) {
@@ -81,10 +85,11 @@ function ReportProblem() {
                     getDownloadURL(uploadTask.snapshot.ref).then((urls) => {
                         ImageUrls.push(urls)
                         console.log("temp urls", ImageUrls);
+                        updateDoc(doc(problemCollectionRef, problemUUID), {
+                            imagesURLs: ImageUrls
+                        })
                     })
-                    updateDoc(doc(problemCollectionRef, problemUUID), {
-                        imagesURLs: ImageUrls
-                    })
+                    
                 }
             );
         });
@@ -93,7 +98,7 @@ function ReportProblem() {
         .then(() => { if (Image != []) { alert("All image is upload!") } })
         .catch((err) => console.log(err));
         
-        setImagesURLs(ImageUrls);
+        // setImagesURLs(ImageUrls);
     };
 
     const handleSubmit = async (event) => {
@@ -108,7 +113,9 @@ function ReportProblem() {
                 problemInfo,
                 problemTags,
                 problemRate,
-                imagesURLs,
+                status: 'error',
+                imagesURLs: [],
+                reportDate: Timestamp.fromDate(new Date()),                
                 author: { email: user.email, name: user.uid },
             })
             navigate('/dashboard')
