@@ -2,7 +2,7 @@ import React from 'react'
 import { Navigate , Outlet } from 'react-router-dom'
 import { UserAuth } from '../contexts/AuthContext'
 
-function AdminRoute({children}) {
+function AdminRoute() {
     const { user } = UserAuth()
     
     console.log("🚀 ~ file: AdminRoute.jsx:10 ~ AdminRoute ~ user:", user)

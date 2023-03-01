@@ -2,7 +2,7 @@ import { MixedTags } from '@yaireo/tagify/dist/react.tagify'
 import { useState } from 'react';
 import { Button, Card, Row, Col, Image, Stack, Form, Modal, InputGroup } from 'react-bootstrap'
 import StatusTags from './StatusTags';
-import { setDoc, doc, collection, updateDoc, Timestamp } from 'firebase/firestore';
+import { setDoc, doc, collection, updateDoc, Timestamp, deleteDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase'
 import { UserAuth } from '../contexts/AuthContext';
 
@@ -30,6 +30,11 @@ const AdminProblemCard = ({ item, fetchy }) => {
     })
     fetchy()
     handleClose()
+  }
+
+  const deleteProblem = async () => {
+    await deleteDoc(doc(problemCollectionRef, item.problemUUID))
+    fetchy()
   }
 
   let tagifyTag = ''
@@ -68,16 +73,17 @@ const AdminProblemCard = ({ item, fetchy }) => {
             <MixedTags className="my-2 text-start" readOnly value={`${tagifyTag}`} />
             <Card.Text className="text-start">{item.problemInfo}</Card.Text>
           </Col>
-          <Col sm={2} className='d-flex my-4 mr-3'>
-            <Stack gap={2} className='mx-4'>
+          <Col sm={2} className='my-4 mr-3'>
+            <Stack gap={3} className='d-flex mx-4 justify-content-between'>
               <StatusTags status={item.status} />
               <Button onClick={handleShow} variant={`outline-${statusBorder(item.status)}`} >Resolve Problem</Button>
-
+              <Button onClick={deleteProblem} variant={`outline-danger`} >Delete Post</Button>
             </Stack>
 
           </Col>
         </Row>
       </Card>
+
       <Modal show={show} onHide={handleClose} size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered >
