@@ -12,6 +12,7 @@
     "@yaireo/tagify": "^4.17.7",
     "bootstrap": "^5.2.3",
     "convert-firebase-timestamp": "^0.0.5",
+    "dotenv": "^16.0.3",
     "firebase": "^9.17.1",
     "firebase-admin": "^11.5.0",
     "node-sass": "^8.0.0",

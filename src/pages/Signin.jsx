@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import { Container, Form, Button } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
+import GuestButton from '../components/GuestButton'
 import { UserAuth } from '../contexts/AuthContext'
 
 const Signin = () => {
@@ -27,7 +28,7 @@ const Signin = () => {
   return (
     <Container>
       <h1 className='text-center mb-3'>Sign In</h1>
-      <Form className='d-grid' onSubmit={handleSubmit}>
+      <Form className='d-grid mb-5' onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control onChange={(event) => setEmail(event.target.value)} type="email" placeholder="Enter email" />
@@ -40,6 +41,7 @@ const Signin = () => {
       <p className='text-center mt-4'>Don't have an account yet? <Link to='/signup'>Sign up</Link></p>
 
       </Form>
+      <GuestButton />
     </Container>
   )
 }
