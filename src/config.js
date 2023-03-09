@@ -1,14 +1,15 @@
 import firebase, { initializeApp } from 'firebase/app'
 import 'firebase/auth'
+import * as config from '../firebasekey'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCdDNMHCQlHS0B_sLe6MEuNRIyirIbfgfk",
-  authDomain: "projbever.firebaseapp.com",
-  projectId: "projbever",
-  storageBucket: "projbever.appspot.com",
-  messagingSenderId: "61471535275",
-  appId: "1:61471535275:web:32c31b129b1940bf0b07ee",
-  measurementId: "G-KWREWSMC6J"
+  apiKey: config.FIREBASE_APIKEY,
+  authDomain: config.FIREBASE_AUTHDOMAIN,
+  projectId: config.FIREBASE_PROJECTID,
+  storageBucket: config.FIREBASE_STORAGEBUCKET,
+  messagingSenderId: config.FIREBASE_MESSAGINGSENDERID,
+  appId: config.FIREBASE_APPID,
+  measurementId: config.FIREBASE_MEASUREMENTID
 };
 
 const app = initializeApp(firebaseConfig)
