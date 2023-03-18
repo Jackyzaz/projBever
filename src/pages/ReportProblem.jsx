@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react'
-import { Form, Button, Image } from 'react-bootstrap'
+import { Form, Button, Image, Container } from 'react-bootstrap'
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 import Tags from "@yaireo/tagify/dist/react.tagify"
 import { setDoc, doc, collection, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
@@ -141,6 +141,7 @@ function ReportProblem() {
 
     return (
         <>
+            <Container className='my-5'>
             <h1 className='text-center mb-3'>Problem Reporter</h1>
             <Form className='d-grid' onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="problem_name">
@@ -177,6 +178,7 @@ function ReportProblem() {
                     Submit
                 </Button>
             </Form>
+            </Container>
         </>
     )
 }

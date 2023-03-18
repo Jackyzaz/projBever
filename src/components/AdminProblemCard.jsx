@@ -17,7 +17,7 @@ const AdminProblemCard = ({ item, fetchy }) => {
   const [orimts, setOrimts] = useState(item.mts)
   const [status, setStatus] = useState(item.status)
   const [mts, setMts] = useState('')
-  const [costs, setCosts] = useState('')
+  const [costs, setCosts] = useState(0)
 
   const problemCollectionRef = collection(db, "/user_problems")
   const handleUpdate = async (event) => {
@@ -33,7 +33,11 @@ const AdminProblemCard = ({ item, fetchy }) => {
   }
 
   const deleteProblem = async () => {
-    await deleteDoc(doc(problemCollectionRef, item.problemUUID))
+    await updateDoc(doc(problemCollectionRef, item.problemUUID), {
+      status: 'deleted',
+      mts: 'Deleted by admin',
+      cost: costs,
+    })
     fetchy()
   }
 
@@ -93,6 +97,14 @@ const AdminProblemCard = ({ item, fetchy }) => {
         <Modal.Body>
           <Row>
             <Col sm={2}>
+              <p>Problem UUID</p>
+            </Col>
+            <Col sm={10}>
+              <p style={{ 'fontWeight': 'bold' }}>{item.problemUUID}</p>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={2}>
               <p>Problem Name </p>
 
             </Col>
@@ -102,10 +114,10 @@ const AdminProblemCard = ({ item, fetchy }) => {
           </Row>
           <Row>
             <Col sm={2}>
-              <p>Problem UUID</p>
+              <p>Report by</p>
             </Col>
             <Col sm={10}>
-              <p style={{ 'fontWeight': 'bold' }}>{item.problemUUID}</p>
+              <p style={{ 'fontWeight': 'bold' }}>{item.author.email}</p>
             </Col>
           </Row>
           <Row>

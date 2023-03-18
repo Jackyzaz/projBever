@@ -19,3 +19,20 @@ body .tagify--mix .tagify__input {
   line-height: 1.5;
   display: block
 }
+
+hr.divider {
+  margin: 1.5rem auto;
+  border-radius: 52px;
+  opacity: 1;
+  height: 0.1rem;
+}
+
+hr.divider-light {
+  max-width: 25rem;
+  border: 1px solid white;
+}
+
+hr.divider-primary {
+  max-width: 10rem;
+  border: 1px solid black;
+}

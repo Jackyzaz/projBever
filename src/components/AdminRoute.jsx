@@ -1,6 +1,7 @@
 import React from 'react'
 import { Navigate , Outlet } from 'react-router-dom'
 import { UserAuth } from '../contexts/AuthContext'
+import { Loading } from './Loading'
 
 function AdminRoute() {
     const { user } = UserAuth()
@@ -15,7 +16,7 @@ function AdminRoute() {
     // );
 
     if (!user.uid) {
-        return <h1> Loading </h1>
+        return <Loading />
     }
 
     if ( !user.isAdmin )

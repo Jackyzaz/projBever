@@ -13,7 +13,6 @@ function AppNavBar() {
                 <Navbar.Brand href='#home'>Bever</Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav"></Navbar.Toggle>
                 <Navbar.Collapse>
-
                     {!user?.isAdmin 
                         ? (
                             <Nav className="me-auto">
@@ -24,6 +23,7 @@ function AppNavBar() {
                         ) : (
                             <Nav className="me-auto">
                                 <Nav.Link as={Link} to="/admin/dashboard">ProblemMonitor</Nav.Link>
+                                <Nav.Link as={Link} to="/admin/database">Database</Nav.Link>
                             </Nav>
                         )
                     }

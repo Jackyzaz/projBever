@@ -6,6 +6,7 @@ import AppNavBar from './components/AppNavBar'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthContextProvider } from './contexts/AuthContext'
 import AdminDashboard from './pages/AdminDashboard'
+import AdminDatabase from './pages/AdminDatabase'
 import Dashboard from './pages/Dashboard'
 import Home from './pages/Home'
 import ReportProblem from './pages/ReportProblem'
@@ -20,7 +21,6 @@ function App() {
   return (
     <AuthContextProvider>
       <AppNavBar />
-        <Container className='mt-5'>
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/signin' element={<Signin />} />
@@ -33,9 +33,9 @@ function App() {
 
             <Route path='/admin' element={<AdminRoute></AdminRoute>}>
               <Route path="dashboard" element={<AdminDashboard/>}/>
+              <Route path="database" element={<AdminDatabase/>}/>
             </Route>
           </Routes>
-        </Container>
     </AuthContextProvider>
   )
 }

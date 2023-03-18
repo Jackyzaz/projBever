@@ -13,19 +13,22 @@ const StatusTags = (props) => {
 
   switch (props.status) {
     case 'wait':
-      return <Button variant='primary'>Waiting for Response</Button>
+      return <Button onClick={props.click} variant='primary'>Waiting for Response</Button>
       break
     case 'inprogress':
-      return <Button variant='warning'>In Progress</Button>
+      return <Button onClick={props.click} variant='warning'>In Progress</Button>
       break
     case 'success':
-      return <Button variant='success'>Success</Button>
+      return <Button onClick={props.click} variant='success'>Success</Button>
       break
     case 'fail':
-      return <Button variant='danger'>Rejected</Button>
+      return <Button onClick={props.click} variant='danger'>Rejected</Button>
+      break
+    case 'deleted':
+      return <Button onClick={props.click} variant='danger'>Deleted</Button>
       break
     default:
-      return <Button variant='danger'>Error</Button>
+      return <Button onClick={props.click} variant='danger'>Error</Button>
   }
 }
 

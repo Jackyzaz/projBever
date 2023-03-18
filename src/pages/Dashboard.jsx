@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Button, Form, Stack } from 'react-bootstrap'
+import { Button, Container, Form, Stack } from 'react-bootstrap'
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import ProblemCard from '../components/ProblemCard';
 import { UserAuth } from '../contexts/AuthContext';
@@ -52,6 +52,7 @@ const Dashboard = () => {
 
   return (
     <>
+    <Container className='my-5'>
       <h1 className='text-center'>Dashboard</h1>
       <div className='mt-3 text-center'>
         <h5>User Email : {user && user.email}</h5>
@@ -78,7 +79,9 @@ const Dashboard = () => {
           </Form>
         </div>
 
-        {data?.filter( item => {
+        {data?.filter(item => {
+          return !item.data().status.includes('deleted')
+        }).filter( item => {
           return item.data().problemName.includes( searchProblem )
         }).map((item, index) => {
           console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
@@ -86,6 +89,7 @@ const Dashboard = () => {
         })}
 
       </div>
+    </Container>
     </>
   )
 }
