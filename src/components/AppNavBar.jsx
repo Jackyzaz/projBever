@@ -10,7 +10,7 @@ function AppNavBar() {
     return (
         <Navbar bg={user?.isAdmin ? 'danger' : 'primary'} variant="dark" sticky='top' expand='md' >
             <Container>
-                <Navbar.Brand href='#home'>Bever</Navbar.Brand>
+                <Navbar.Brand href='/'>Bever</Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav"></Navbar.Toggle>
                 <Navbar.Collapse>
                     {!user?.isAdmin 
@@ -23,6 +23,7 @@ function AppNavBar() {
                         ) : (
                             <Nav className="me-auto">
                                 <Nav.Link as={Link} to="/admin/dashboard">ProblemMonitor</Nav.Link>
+                                <Nav.Link as={Link} to="/admin/ranking">Problem Ranking</Nav.Link>
                                 <Nav.Link as={Link} to="/admin/database">Database</Nav.Link>
                             </Nav>
                         )

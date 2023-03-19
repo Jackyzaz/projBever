@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 import StatusTags from './StatusTags';
 
-const ProblemTable = ({ item, fetchy }) => {
+const ProblemTable = ({ item, fetchy, key }) => {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);

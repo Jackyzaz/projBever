@@ -2,11 +2,12 @@ import { collection, getDocs, orderBy, query } from '@firebase/firestore'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button, Container, Form, InputGroup, Pagination, Table } from 'react-bootstrap'
 import AdminProblemCard from '../components/AdminProblemCard'
+import ProblemRankingTable from '../components/ProblemRankTable'
 import ProblemTable from '../components/ProblemTable'
 import { UserAuth } from '../contexts/AuthContext'
 import { db } from '../firebase'
 
-const AdminDatabase = () => {
+const AdminRanking = () => {
     const { user } = UserAuth()
 
     const [data, setData] = useState([])
@@ -44,7 +45,7 @@ const AdminDatabase = () => {
             <Container>
                 <div className='mt-5'>
                     <div className='d-flex justify-content-center mb-4'>
-                        <h1>Problem Database</h1>
+                        <h1>Problem Ranking</h1>
                     </div>
                     <Form>
 
@@ -79,29 +80,38 @@ const AdminDatabase = () => {
                     <Pagination.Next onClick={() => { goNextPage(1) }} />
                     <Pagination.Last />
                 </Pagination>
-                <table className="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
-                    <thead>
-                        <tr>
-                            <th className='justify-content-center text-center'>Report Date</th>
-                            <th className='justify-content-center text-center'>Problem Name</th>
-                            <th className='justify-content-center text-center'>User Email</th>
-                            <th className='justify-content-center text-center'>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        {data?.filter(item => {
-                            return item.data().status.includes(searchStatus)
-                        }).slice((searchPage * 20) - 20, searchPage * 20).map((item, index) => {
-                            console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
-                            return <ProblemTable item={item.data()} key={index} fetchy={fetchProblem} />
-                        })}
-                    </tbody>
-                </table>
             </Container>
+            <Table className="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                <thead>
+                   
+                    <tr>
+                        <th className='justify-content-center text-center align-middle' rowspan="2">Report Date</th>
+                        <th className='justify-content-center text-center align-middle' rowspan="2">Problem Name</th>
+                        <th className='justify-content-center text-center' colspan="3">Estimated Rank</th>
+                        <th className='justify-content-center text-center align-middle' rowSpan="2">Ranking Rate</th>
+                        <th className='justify-content-center text-center align-middle' rowSpan="2">Edit Estimated</th>
+                    </tr>
+                    <tr>
+                        <th className='justify-content-center text-center'>Costs</th>
+                        <th className='justify-content-center text-center'>Time</th>
+                        <th className='justify-content-center text-center'>Benefits</th>
+                    </tr>
+                    <tr>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {data?.filter(item => {
+                        return item.data().status.includes(searchStatus)
+                    }).slice((searchPage * 20) - 20, searchPage * 20).map((item, index) => {
+                        console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
+                        return <ProblemRankingTable item={item.data()} key={index} fetchy={fetchProblem} />
+                    })}
+                </tbody>
+            </Table>
         </>
 
     )
 }
 
-export default AdminDatabase
+export default AdminRanking

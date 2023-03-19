@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Button, Col, Container, Form, InputGroup, Row, Stack } from 'react-bootstrap'
+import { Button, CardGroup, Col, Container, Form, InputGroup, Pagination, Row, Stack } from 'react-bootstrap'
 import { useNavigate, Link } from 'react-router-dom';
 import ProblemCard from '../components/ProblemCard';
 import { UserAuth } from '../contexts/AuthContext';
@@ -13,6 +13,8 @@ const AdminDashboard = () => {
   const [data, setData] = useState([]);
   const [searchProblem, setSearchProblem] = useState('');
   const [searchStatus, setSearchStatus] = useState('');
+
+  const [searchPage, setSearchPage] = useState(1);
 
 
   const navigate = useNavigate();
@@ -33,6 +35,14 @@ const AdminDashboard = () => {
     fetchProblem();
   }, [user])
 
+  function goNextPage(step) {
+    setSearchPage(searchPage + step)
+}
+
+function goPrevPage(step) {
+  setSearchPage(searchPage - step)
+}
+
   return (
     <>
       <Container className='my-5'>
@@ -43,7 +53,7 @@ const AdminDashboard = () => {
           </div>
         </div>
         <hr className='text-center mt-5' ></hr>
-        <div className='my-5'>
+        <div className='mt-5'>
           <div className='d-flex justify-content-center mb-4'>
             <h1>School Problem Monitor</h1>
           </div>
@@ -66,16 +76,35 @@ const AdminDashboard = () => {
           </Form>
         </div>
 
-        {data?.filter(item => {
-          return !item.data().status.includes('deleted')
-        }).filter(item => {
-          return item.data().status.includes(searchStatus)
-        }).filter(item => {
-          return item.data().problemName.includes(searchProblem)
-        }).map((item, index) => {
-          console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
-          return <AdminProblemCard item={item.data()} key={index} fetchy={fetchProblem} />
-        })}
+        <Pagination className='mt-4 text-center justify-content-center' variant='danger'>
+          <Pagination.First />
+          <Pagination.Prev onClick={() => { goPrevPage(1) }} />
+          <Pagination.Item onClick={() => { setSearchPage(1) }}> 1</Pagination.Item>
+          <Pagination.Ellipsis />
+
+          <Pagination.Item onClick={() => { goPrevPage(2) }}>{searchPage - 2}</Pagination.Item>
+          <Pagination.Item onClick={() => { goPrevPage(1) }}>{searchPage - 1}</Pagination.Item>
+          <Pagination.Item active onClick={fetchProblem}>{searchPage}</Pagination.Item>
+          <Pagination.Item onClick={() => { goNextPage(1) }}>{searchPage + 1}</Pagination.Item>
+          <Pagination.Item onClick={() => { goNextPage(2) }}>{searchPage + 2}</Pagination.Item>
+
+          <Pagination.Ellipsis />
+          <Pagination.Item onClick={() => { goNextPage(9) }}>{searchPage + 9}</Pagination.Item>
+          <Pagination.Next onClick={() => { goNextPage(1) }} />
+          <Pagination.Last />
+        </Pagination>
+        <Row className='justify-content-center text-center'>
+          {data?.filter(item => {
+            return !item.data().status.includes('deleted')
+          }).filter(item => {
+            return item.data().status.includes(searchStatus)
+          }).filter(item => {
+            return item.data().problemName.includes(searchProblem)
+          }).slice((searchPage * 12) - 12, searchPage * 12).map((item, index) => {
+            console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
+            return <Col sm={12} md={7} xl={5} xxl={4}><AdminProblemCard item={item.data()} key={index} fetchy={fetchProblem} /></Col>
+          })}
+        </Row>
       </Container>
     </>
   )

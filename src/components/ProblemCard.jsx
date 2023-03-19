@@ -48,16 +48,16 @@ const ProblemCard = ({ item }) => {
     <div>
       <Card className='mt-4 box' border={statusBorder(item.status)}>
         <Row>
-          <Col sm={3}>
+          <Col sm={4} md={3} xl={3}>
             <img className='img-fluid rounded-start' src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.teamgroup.co.th/wp-content/themes/consultix/images/no-image-found-360x260.png'} />
           </Col>
-          <Col sm={7} className='my-4'>
+          <Col sm={4} md={6} xl={6} className='my-4'>
             <Card.Title className="d-flex justify-content-start">{item.problemName}</Card.Title>
             <Card.Subtitle className="text-start text-muted">{item.reportDate.toDate().toLocaleString()}</Card.Subtitle>
-            <MixedTags className="my-2 text-start" readOnly value={`${tagifyTag}`} />
+            <MixedTags className="my-3 text-start" readOnly value={`${tagifyTag}`} />
             <Card.Text className="text-start">{item.problemInfo}</Card.Text>
           </Col>
-          <Col sm={2} className='d-flex my-4 mr-3'>
+          <Col sm={2} md={3} xl={3} className='d-flex my-4 mr-3'>
             <Stack gap={2} className='mx-4'>
               <StatusTags status={item.status} />
               <Button onClick={handleShow} variant={`outline-${statusBorder(item.status)}`} >View Detail</Button>

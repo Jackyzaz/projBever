@@ -61,31 +61,33 @@ const AdminProblemCard = ({ item, fetchy }) => {
     }
   }
 
-  
+
 
   return (
     <div>
-      <Card className='mt-4 box' border={statusBorder(item.status)}>
-        <Row>
-          <Col sm={3}>
+      <Card className='mt-4 box' border={statusBorder(item.status)} style={{ width: '25rem' }}>
+        <Card.Img style={{ height: '25rem' }} variant="top" src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png'} />
+        {/* <Row> */}
+        {/* <Col sm={3}>
             <img className='img-fluid rounded-start' src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png'} />
-          </Col>
-          <Col sm={7} className='my-4'>
-            <Card.Title className="d-flex justify-content-start text-bold">{item.problemName}</Card.Title>
-            <Card.Subtitle className="text-start text-muted mb-2">by {item.author.email}</Card.Subtitle>
-            <Card.Subtitle className="text-start text-muted mb-2">{item.reportDate.toDate().toLocaleString()}</Card.Subtitle>
-            <MixedTags className="my-2 text-start" readOnly value={`${tagifyTag}`} />
-            <Card.Text className="text-start">{item.problemInfo}</Card.Text>
-          </Col>
-          <Col sm={2} className='my-4 mr-3'>
-            <Stack gap={3} className='d-flex mx-4 justify-content-between'>
-              <StatusTags status={item.status} />
-              <Button onClick={handleShow} variant={`outline-${statusBorder(item.status)}`} >Resolve Problem</Button>
-              <Button onClick={deleteProblem} variant={`outline-danger`} >Delete Post</Button>
-            </Stack>
-
-          </Col>
-        </Row>
+          </Col> */}
+        {/* <Col sm={7} className='my-4'> */}
+        <div className='mt-3 mb-5 mx-3'>
+          <Card.Title className="d-flex justify-content-start text-bold">{item.problemName}</Card.Title>
+          <Card.Subtitle className="text-start text-muted mb-2">by {item.author.email}</Card.Subtitle>
+          <Card.Subtitle className="text-start text-muted mb-2">{item.reportDate.toDate().toLocaleString()}</Card.Subtitle>
+          <MixedTags className="my-2 text-start" readOnly value={`${tagifyTag}`} />
+          <Card.Text className="text-start">{item.problemInfo}</Card.Text>
+          {/* </Col>
+          <Col sm={2} className='my-4 mr-3'> */}
+          <Stack gap={3} className='d-flex mx-4 justify-content-between'>
+            <StatusTags status={item.status} />
+            <Button onClick={handleShow} variant={`outline-${statusBorder(item.status)}`} >Resolve Problem</Button>
+            <Button onClick={deleteProblem} variant={`outline-danger`} >Delete Post</Button>
+          </Stack>
+        </div>
+        {/* </Col> */}
+        {/* </Row> */}
       </Card>
 
       <Modal show={show} onHide={handleClose} size="lg"

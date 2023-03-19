@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react'
-import { Form, Button, Image, Container } from 'react-bootstrap'
+import { Form, Button, Image, Container, Row, Col } from 'react-bootstrap'
 import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
 import Tags from "@yaireo/tagify/dist/react.tagify"
 import { setDoc, doc, collection, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
@@ -8,6 +8,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { UserAuth } from '../contexts/AuthContext'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { v4 } from "uuid";
+import { Loading } from '../components/Loading';
 
 function ReportProblem() {
 
@@ -22,7 +23,10 @@ function ReportProblem() {
     const [problemName, setProblemName] = useState("");
     const [problemInfo, setProblemInfo] = useState("");
     const [problemTags, setProblemTags] = useState("");
-    const [problemRate, setProblemRate] = useState(null);
+    const [problemRate, setProblemRate] = useState({ costs: 5, time: 5, bnf: 3 });
+    const [problemRateCosts, setProblemRateCosts] = useState(5);
+    const [problemRateTime, setProblemRateTime] = useState(5);
+    const [problemRateBnf, setProblemRateBnf] = useState(3);
     const [images, setImages] = useState([]);
     const [imagesURLs, setImagesURLs] = useState([]);
     const [previewImageURLs, setPreviewImageURLs] = useState([]);
@@ -30,12 +34,12 @@ function ReportProblem() {
 
 
     if (!user.uid) {
-        return <h1> Loading </h1>
-      }
-    
+        return <Loading />
+    }
+
     if (user.isAdmin) {
         return <Navigate to='/admin/dashboard' />
-      }
+    }
 
     // on tag add/edit/remove
 
@@ -52,7 +56,8 @@ function ReportProblem() {
         if (images.length < 1) return;
         const previewImageUrls = [];
         const tempImageUrls = [];
-        images.forEach((image) => {previewImageUrls.push(URL.createObjectURL(image))
+        images.forEach((image) => {
+            previewImageUrls.push(URL.createObjectURL(image))
             tempImageUrls.push(`problems_images/${user && user.email}/${problemUUID}/${image.name}`)
             console.log(tempImageUrls)
         });
@@ -98,15 +103,15 @@ function ReportProblem() {
                             imagesURLs: ImageUrls
                         })
                     })
-                    
+
                 }
             );
         });
 
         Promise.all(promises)
-        .then(() => { if (Image != []) { alert("All image is upload!") } })
-        .catch((err) => console.log(err));
-        
+            .then(() => { if (Image != []) { alert("All image is upload!") } })
+            .catch((err) => console.log(err));
+
         // setImagesURLs(ImageUrls);
     };
 
@@ -121,12 +126,12 @@ function ReportProblem() {
                 problemName,
                 problemInfo,
                 problemTags,
-                problemRate,
+                problemRate: { costs: problemRateCosts, time: problemRateTime, bnf: problemRateBnf },
                 status: 'wait',
                 imagesURLs: [],
                 costs: [],
                 mts: {},
-                reportDate: Timestamp.fromDate(new Date()),                
+                reportDate: Timestamp.fromDate(new Date()),
                 author: { email: user.email, name: user.uid },
             })
             navigate('/dashboard')
@@ -142,42 +147,88 @@ function ReportProblem() {
     return (
         <>
             <Container className='my-5'>
-            <h1 className='text-center mb-3'>Problem Reporter</h1>
-            <Form className='d-grid' onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="problem_name">
-                    <Form.Label>Your Problem Name</Form.Label>
-                    <Form.Control type="text" placeholder="Enter Your Problem Name ex. s" onChange={(event) => setProblemName(event.target.value)} />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Add Image</Form.Label>
-                    <Form.Control type="file" multiple placeholder="Add Image" onChange={handleChange} />
-                    {previewImageURLs.map((imageSrc, idx) => (
-                        <Image className="mt-3 border shadow-lg rounded" height={180} key={idx} src={imageSrc} />
-                    ))}
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="problem_name">
-                    <Form.Label>Describe Problem</Form.Label>
-                    <Form.Control as="textarea" type="text" placeholder="Describe Your Problem" onChange={(event) => setProblemInfo(event.target.value)} />
-                </Form.Group>
+                <h1 className='text-center mb-3'>Problem Reporter</h1>
+                <Form className='d-grid' onSubmit={handleSubmit}>
+                    <Form.Group className="mb-3" controlId="problem_name">
+                        <Form.Label>Your Problem Name</Form.Label>
+                        <Form.Control type="text" placeholder="Enter Your Problem Name ex. s" onChange={(event) => setProblemName(event.target.value)} />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                        <Form.Label>Add Image</Form.Label>
+                        <Form.Control type="file" multiple placeholder="Add Image" onChange={handleChange} />
+                        {previewImageURLs.map((imageSrc, idx) => (
+                            <Image className="mt-3 border shadow-lg rounded" height={180} key={idx} src={imageSrc} />
+                        ))}
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="problem_name">
+                        <Form.Label>Describe Problem</Form.Label>
+                        <Form.Control as="textarea" type="text" placeholder="Describe Your Problem" onChange={(event) => setProblemInfo(event.target.value)} />
+                    </Form.Group>
 
-                <Form.Group className="mb-3" controlId="problem_name">
-                    <Form.Label>Tag Problem</Form.Label>
-                    <Tags
-                        tagifyRef={tagifyRef} // optional Ref object for the Tagify instance itself, to get access to  inner-methods
-                        defaultValue="ปัญหาโรงเรียน, ปัญหาห้องน้ำ, ปัญหาขยะ"
-                        onChange={onTagChange}
-                    />
-                </Form.Group>
+                    <Form.Group className="mb-3" controlId="problem_name">
+                        <Form.Label>Tag Problem</Form.Label>
+                        <Tags
+                            tagifyRef={tagifyRef} // optional Ref object for the Tagify instance itself, to get access to  inner-methods
+                            defaultValue="ปัญหาโรงเรียน, ปัญหาห้องน้ำ, ปัญหาขยะ"
+                            onChange={onTagChange}
+                        />
+                    </Form.Group>
+                    <hr />
+                    <h2 className='text-center my-3'>Rate your Problem</h2>
 
-                <Form.Group className="mb-3">
-                    <Form.Label>Rate Problem</Form.Label>
-                    <Form.Range onChange={(event) => setProblemRate(event.target.value)} />
-                </Form.Group>
+                    <Row>
+                        <Col>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Budget Estimation</Form.Label>
+                                <Form.Select value={problemRateCosts} onChange={(event) => { setProblemRateCosts(event.target.value) }} >
+                                    <option value="1"> No Cost</option>
+                                    <option value="2">&le; 100 &#3647; </option>
+                                    <option value="3">100 ~ 300 &#3647;</option>
+                                    <option value="4">300 ~ 500 &#3647;</option>
+                                    <option value="5">500 ~ 1000 &#3647;</option>
+                                    <option value="6">1000 ~ 1500 &#3647;</option>
+                                    <option value="8">1500 ~ 3000 &#3647;</option>
+                                    <option value="9">3000 ~ 5000 &#3647;</option>
+                                    <option value="10">&ge; 5000 &#3647;</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Time EstimatiDDDon</Form.Label>
+                                <Form.Select value={problemRateTime} onChange={(event) => { setProblemRateTime(event.target.value) }} >
+                                    <option value="1">As Fast As Possible</option>
+                                    <option value="2">Within an Hour</option>
+                                    <option value="3">Within 3 Hours</option>
+                                    <option value="4">Within 8 Hours</option>
+                                    <option value="5">Within 1 Day</option>
+                                    <option value="6">Within 3 Days</option>
+                                    <option value="8">Within 1 Week</option>
+                                    <option value="9">Within 3 Weeks</option>
+                                    <option value="10">Within 1 Months</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Benefits Estimation</Form.Label>
+                                <Form.Select value={problemRateBnf} onChange={(event) => { setProblemRateBnf(event.target.value) }} >
+                                    <option value="6">Myself</option>
+                                    <option value="5">Some people</option>
+                                    <option value="4">a Group of people</option>
+                                    <option value="3">Some Group of people</option>
+                                    <option value="2">Most people in school</option>
+                                    <option value="1">Everyone in school</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                <Button className="mt-3" variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
+
+                    <Button className="mt-3" variant="primary" type="submit">
+                        Submit
+                    </Button>
+                </Form>
             </Container>
         </>
     )
