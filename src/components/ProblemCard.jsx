@@ -48,7 +48,7 @@ const ProblemCard = ({ item }) => {
     <div>
       <Card className='mt-4 box' border={statusBorder(item.status)}>
         <Row>
-          <Col sm={4} md={3} xl={3}>
+          <Col sm={4} md={3} xl={3} >
             <img className='img-fluid rounded-start' src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.teamgroup.co.th/wp-content/themes/consultix/images/no-image-found-360x260.png'} />
           </Col>
           <Col sm={4} md={6} xl={6} className='my-4'>
@@ -103,13 +103,13 @@ const ProblemCard = ({ item }) => {
             return <img key={idx} className='mb-3 mr-3' src={url} width={300}></img>
           })}
         </Modal.Body>
-          {item.mts.author ? <ResolveMassage item={item} statusForm={statusForm}/> : ''}
+        {item.mts.author ? <ResolveMassage item={item} statusForm={statusForm} /> : ''}
       </Modal>
     </div>
   )
 }
 
-const ResolveMassage = ({item, statusForm}) => {
+const ResolveMassage = ({ item, statusForm }) => {
   return (
     <>
       <hr className=''></hr>

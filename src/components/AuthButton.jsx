@@ -21,13 +21,13 @@ function AuthButton() {
 
     if (!user) {
         return <Navbar.Collapse className="justify-content-end">
-            <Nav.Link as={Link} to="/signin"><Button className="" variant="outline-light">Sign In</Button></Nav.Link>
+            <Nav.Link as={Link} to="/signin"><Button className="mx-5 my-2" variant="outline-light">Sign In</Button></Nav.Link>
         </Navbar.Collapse>
     } else {
         return <Navbar.Collapse className="justify-content-end">
             <Navbar.Text>
-                Signed in as: <a href="/dashboard">{user && user.email}</a>
-                <Button onClick={handleLogout} className="m-2" variant="outline-light">Sign out</Button>
+                Signed in as: <a href="/profile">{user && user.email}</a>
+                <Button onClick={handleLogout} className="ms-4 me-5" variant="outline-light">Sign out</Button>
             </Navbar.Text>
         </Navbar.Collapse>
     }

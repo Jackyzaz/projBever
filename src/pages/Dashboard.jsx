@@ -89,8 +89,9 @@ const Dashboard = () => {
             </Form>
           </div>
 
-          {!data.length && <Loading />}
 
+
+        </div>
           {data?.filter(item => {
             return !item.data().status.includes('deleted')
           }).filter(item => {
@@ -101,8 +102,6 @@ const Dashboard = () => {
             console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
             return <ProblemCard item={item.data()} key={index} />
           })}
-
-        </div>
       </Container>
     </>
   )

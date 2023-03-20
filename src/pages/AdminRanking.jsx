@@ -1,5 +1,6 @@
-import { collection, getDocs, orderBy, query } from '@firebase/firestore'
+import { collection, doc, getDocs, orderBy, query, updateDoc } from '@firebase/firestore'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useImperativeHandle } from 'react'
 import { Button, Container, Form, InputGroup, Pagination, Table } from 'react-bootstrap'
 import AdminProblemCard from '../components/AdminProblemCard'
 import ProblemRankingTable from '../components/ProblemRankTable'
@@ -14,18 +15,34 @@ const AdminRanking = () => {
     const [searchStatus, setSearchStatus] = useState('')
     const [searchProblem, setSearchProblem] = useState('');
 
+    const [error, setError] = useState('')
+
     const [searchPage, setSearchPage] = useState(1);
 
-
+    
+    const updatedata = () => {
+        console.log('updaterank')
+        data?.map((item) => { 
+            console.log('updaterank' + item.data().problemUUID)
+            
+            updateDoc(doc(problemCollectionRef, item.data().problemUUID), {
+                RankingRate: parseFloat(Math.sqrt(Math.pow(item.data().problemRate.costs, 2)
+                + Math.pow(item.data().problemRate.time, 2)
+                + Math.pow(item.data().problemRate.bnf, 2)).toFixed(2)),
+            })
+        })
+    }
+    
     const fetchProblem = useCallback(() => {
         const problemCollectionRef = collection(db, "user_problems")
-        const adminProblemRef = query(problemCollectionRef, orderBy("reportDate"))
+        const adminProblemRef = query(problemCollectionRef, orderBy("RankingRate"))
         getDocs(adminProblemRef).then(res => console.log(res.docs[0]))
         const getData = async () => {
             const res = await getDocs(adminProblemRef)
-            setData(res.docs.reverse());
+            setData(res.docs);
         }
         getData();
+        // updatedata();
     }, [user])
 
     useEffect(() => {
@@ -64,7 +81,7 @@ const AdminRanking = () => {
                     </Form>
                 </div>
                 <Pagination className='mt-3 text-center justify-content-center' variant='danger'>
-                    <Pagination.First />
+                    <Pagination.First onClick={() => { setSearchPage(1) }} />
                     <Pagination.Prev onClick={() => { goPrevPage(1) }} />
                     <Pagination.Item onClick={() => { setSearchPage(1) }}> 1</Pagination.Item>
                     <Pagination.Ellipsis />
@@ -81,13 +98,13 @@ const AdminRanking = () => {
                     <Pagination.Last />
                 </Pagination>
             </Container>
-            <Table className="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+            <Table className="table table-striped table-bordered table-sm" cellSpacing="0" width="100%">
                 <thead>
-                   
+
                     <tr>
-                        <th className='justify-content-center text-center align-middle' rowspan="2">Report Date</th>
-                        <th className='justify-content-center text-center align-middle' rowspan="2">Problem Name</th>
-                        <th className='justify-content-center text-center' colspan="3">Estimated Rank</th>
+                        <th className='justify-content-center text-center align-middle' rowSpan="2">Report Date</th>
+                        <th className='justify-content-center text-center align-middle' rowSpan="2">Problem Name</th>
+                        <th className='justify-content-center text-center' colSpan="3">Estimated Rank</th>
                         <th className='justify-content-center text-center align-middle' rowSpan="2">Ranking Rate</th>
                         <th className='justify-content-center text-center align-middle' rowSpan="2">Edit Estimated</th>
                     </tr>
@@ -104,7 +121,6 @@ const AdminRanking = () => {
                     {data?.filter(item => {
                         return item.data().status.includes(searchStatus)
                     }).slice((searchPage * 20) - 20, searchPage * 20).map((item, index) => {
-                        console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
                         return <ProblemRankingTable item={item.data()} key={index} fetchy={fetchProblem} />
                     })}
                 </tbody>

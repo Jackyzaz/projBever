@@ -63,7 +63,7 @@ const AdminDatabase = () => {
                     </Form>
                 </div>
                 <Pagination className='mt-3 text-center justify-content-center' variant='danger'>
-                    <Pagination.First />
+                    <Pagination.First onClick={() => { setSearchPage(1) }}/>
                     <Pagination.Prev onClick={() => { goPrevPage(1) }} />
                     <Pagination.Item onClick={() => { setSearchPage(1) }}> 1</Pagination.Item>
                     <Pagination.Ellipsis />

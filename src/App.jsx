@@ -8,13 +8,17 @@ import { AuthContextProvider } from './contexts/AuthContext'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminDatabase from './pages/AdminDatabase'
 import AdminRanking from './pages/AdminRanking'
+import ConsultantCenter from './pages/ConsultantCenter'
 import Dashboard from './pages/Dashboard'
 import Home from './pages/Home'
+import LostnFoundCenter from './pages/LostnFoundCenter'
 import ReportProblem from './pages/ReportProblem'
 import Signin from './pages/Signin'
 import Signup from './pages/Signup'
+import SocialCenter from './pages/SocialCenter'
 import Test from './pages/test'
 import TagifyWithTemplates from './pages/test'
+import UserProfile from './pages/UserProfile'
 import "./styles.scss" // basic styles for this demo
 
 
@@ -30,6 +34,10 @@ function App() {
             <Route path = '/*' element= {<ProtectedRoute/>}>
               <Route path='reportproblem' element={<ReportProblem />} />
               <Route path='dashboard' element={<Dashboard />} />
+              <Route path='profile' element={<UserProfile />} />
+              <Route path='social' element={<SocialCenter />} />
+              <Route path='consultant' element={<ConsultantCenter />} />
+              <Route path='lostnfound' element={<LostnFoundCenter />} />
             </Route>
 
             <Route path='/admin' element={<AdminRoute></AdminRoute>}>

@@ -66,7 +66,7 @@ const AdminProblemCard = ({ item, fetchy }) => {
   return (
     <div>
       <Card className='mt-4 box' border={statusBorder(item.status)} style={{ width: '25rem' }}>
-        <Card.Img style={{ height: '25rem' }} variant="top" src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png'} />
+        <Card.Img style={{ height: '25rem' }} variant="top" src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.teamgroup.co.th/wp-content/themes/consultix/images/no-image-found-360x260.png'} />
         {/* <Row> */}
         {/* <Col sm={3}>
             <img className='img-fluid rounded-start' src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png'} />

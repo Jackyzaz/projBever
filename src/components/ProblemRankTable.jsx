@@ -1,10 +1,10 @@
 import { collection, doc, updateDoc } from 'firebase/firestore';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 import { db } from '../firebase';
 import StatusTags from './StatusTags';
 
-const ProblemRankingTable = ({ item, fetchy, key }) => {
+const ProblemRankingTable = ({ item, fetchy }) => {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -15,21 +15,28 @@ const ProblemRankingTable = ({ item, fetchy, key }) => {
     const [mts, setMts] = useState('')
     const [costs, setCosts] = useState('')
 
-    const [problemRate, setProblemRate] = useState({ costs: 5, time: 5, bnf: 3 });
     const [problemRateCosts, setProblemRateCosts] = useState(item.problemRate.costs);
     const [problemRateTime, setProblemRateTime] = useState(item.problemRate.time);
     const [problemRateBnf, setProblemRateBnf] = useState(item.problemRate.bnf);
+    const [problemRate, setProblemRate] = useState(item.RankingRate);
 
     const problemCollectionRef = collection(db, "/user_problems")
     const handleUpdate = async (event) => {
+        let rankingrate = parseFloat(Math.sqrt(Math.pow(problemRateCosts, 2)
+            + Math.pow(problemRateTime, 2)
+            + Math.pow(problemRateBnf, 2))).toFixed(2)
         event.preventDefault()
         setError('')
         await updateDoc(doc(problemCollectionRef, item.problemUUID), {
             status: status,
             mts: mts,
             cost: costs,
-            problemRate: { costs: problemRateCosts, time: problemRateTime, bnf: problemRateBnf },
-
+            problemRate: {
+                costs: parseInt(problemRateCosts),
+                time: parseInt(problemRateTime),
+                bnf: parseInt(problemRateBnf)
+            },
+            RankingRate: parseFloat(rankingrate),
         })
         fetchy()
         handleClose()
@@ -38,23 +45,24 @@ const ProblemRankingTable = ({ item, fetchy, key }) => {
     return (
         <>
             <tr>
-                <td>{item.reportDate.toDate().toLocaleString()}</td>
-                <td>{item.problemName}</td>
+                <td className='align-middle'>{item.reportDate.toDate().toLocaleString()}</td>
+                <td className='align-middle'>{item.problemName}</td>
                 {item.problemRate === null ? (
                     <td>nulll</td>
                 ) : (
                     typeof item.problemRate === 'object' ? (
-                        <td>
-                            <Form.Select value={problemRateCosts} disabled size='sm' onChange={(event) => { setProblemRateCosts(event.target.value) }} >
-                                <option value="1"> No Cost</option>
-                                <option value="2">&le; 100 &#3647; </option>
-                                <option value="3">100 ~ 300 &#3647;</option>
-                                <option value="4">300 ~ 500 &#3647;</option>
-                                <option value="5">500 ~ 1000 &#3647;</option>
-                                <option value="6">1000 ~ 1500 &#3647;</option>
-                                <option value="8">1500 ~ 3000 &#3647;</option>
-                                <option value="9">3000 ~ 5000 &#3647;</option>
-                                <option value="10">&ge; 5000 &#3647;</option>
+                        <td className='align-middle'>
+                            <Form.Select value={problemRateCosts} disabled size='sm'
+                                onChange={(event) => { setProblemRateCosts(event.target.value) }} >
+                                <option value={1}> No Cost</option>
+                                <option value={2}>&le; 100 &#3647; </option>
+                                <option value={3}>100 ~ 300 &#3647;</option>
+                                <option value={4}>300 ~ 500 &#3647;</option>
+                                <option value={5}>500 ~ 1000 &#3647;</option>
+                                <option value={6}>1000 ~ 1500 &#3647;</option>
+                                <option value={7}>1500 ~ 3000 &#3647;</option>
+                                <option value={8}>3000 ~ 5000 &#3647;</option>
+                                <option value={9}>&ge; 5000 &#3647;</option>
                             </Form.Select>
                         </td>
                     ) : (
@@ -65,18 +73,18 @@ const ProblemRankingTable = ({ item, fetchy, key }) => {
                     <td>nulll</td>
                 ) : (
                     typeof item.problemRate === 'object' ? (
-                        <td>
+                        <td className='align-middle'>
                             <Form.Select value={problemRateTime} disabled size='sm'
                                 onChange={(event) => { setProblemRateTime(event.target.value) }} >
-                                <option value="1">As Fast As Possible</option>
-                                <option value="2">Within an Hour</option>
-                                <option value="3">Within 3 Hours</option>
-                                <option value="4">Within 8 Hours</option>
-                                <option value="5">Within 1 Day</option>
-                                <option value="6">Within 3 Days</option>
-                                <option value="8">Within 1 Week</option>
-                                <option value="9">Within 3 Weeks</option>
-                                <option value="10">Within 1 Months</option>
+                                <option value={1}>As Fast As Possible</option>
+                                <option value={2}>Within an Hour</option>
+                                <option value={3}>Within 3 Hours</option>
+                                <option value={4}>Within 8 Hours</option>
+                                <option value={5}>Within 1 Day</option>
+                                <option value={6}>Within 3 Days</option>
+                                <option value={7}>Within 1 Week</option>
+                                <option value={8}>Within 3 Weeks</option>
+                                <option value={9}>Within 1 Months</option>
                             </Form.Select>
                         </td>
 
@@ -88,26 +96,26 @@ const ProblemRankingTable = ({ item, fetchy, key }) => {
                     <td>nulll</td>
                 ) : (
                     typeof item.problemRate === 'object' ? (
-                        <td>
-                            <Form.Select value={problemRateTime} disabled size='sm'
+                        <td className='align-middle'>
+                            <Form.Select value={problemRateBnf} disabled size='sm'
                                 onChange={(event) => { setProblemRateBnf(event.target.value) }} >
-                                <option value="6">Myself</option>
-                                <option value="5">Some people</option>
-                                <option value="4">a Group of people</option>
-                                <option value="3">Some Group of people</option>
-                                <option value="2">Most people in school</option>
-                                <option value="1">Everyone in school</option>
+                                <option value={6}>Myself</option>
+                                <option value={5}>Some people</option>
+                                <option value={4}>a Group of people</option>
+                                <option value={3}>Some Group of people</option>
+                                <option value={2}>Most people in school</option>
+                                <option value={1}>Everyone in school</option>
                             </Form.Select>
                         </td>
 
                     ) : (
-                        <td>{item.problemRate}</td>
+                        <td className='align-middle'>{item.problemRate}</td>
                     )
                 )}
                 {/* <td>{item.problemRate.costs ? item.problemRate.costs : 0}</td> */}
                 {/* <td>{item.problemRate.time}</td>
                 <td>{item.problemRate.bnf}</td> */}
-                <td></td>
+                <td className='justify-content-center text-center align-middle'>{item.RankingRate}</td>
                 <td className='justify-content-center text-center'><StatusTags click={handleShow} status={item.status} /></td>
             </tr>
 
@@ -159,8 +167,8 @@ const ProblemRankingTable = ({ item, fetchy, key }) => {
                             <p style={{ 'fontWeight': 'bold' }}>{item.problemInfo}</p>
                         </Col>
                     </Row>
-                    {item.imagesURLs.map((url) => {
-                        return <img className='m-auto my-3' src={url} width={300}></img>
+                    {item.imagesURLs.map((url, index) => {
+                        return <img className='m-auto my-3' key={index} src={url} width={300}></img>
                     })}
                 </Modal.Body>
                 <hr className=''></hr>
@@ -173,45 +181,48 @@ const ProblemRankingTable = ({ item, fetchy, key }) => {
                                     <Form.Label>Budget Estimation</Form.Label>
                                 </Col>
                                 <Col sm={9}>
-                                    <Form.Select value={problemRateCosts} onChange={(event) => { setProblemRateCosts(event.target.value) }} >
-                                        <option value="1"> No Cost</option>
-                                        <option value="2">&le; 100 &#3647; </option>
-                                        <option value="3">100 ~ 300 &#3647;</option>
-                                        <option value="4">300 ~ 500 &#3647;</option>
-                                        <option value="5">500 ~ 1000 &#3647;</option>
-                                        <option value="6">1000 ~ 1500 &#3647;</option>
-                                        <option value="8">1500 ~ 3000 &#3647;</option>
-                                        <option value="9">3000 ~ 5000 &#3647;</option>
-                                        <option value="10">&ge; 5000 &#3647;</option>
+                                    <Form.Select value={problemRateCosts}
+                                        size='sm' onChange={(event) => { setProblemRateCosts(event.target.value) }} >
+                                        <option value={1}> No Cost</option>
+                                        <option value={2}>&le; 100 &#3647; </option>
+                                        <option value={3}>100 ~ 300 &#3647;</option>
+                                        <option value={4}>300 ~ 500 &#3647;</option>
+                                        <option value={5}>500 ~ 1000 &#3647;</option>
+                                        <option value={6}>1000 ~ 1500 &#3647;</option>
+                                        <option value={7}>1500 ~ 3000 &#3647;</option>
+                                        <option value={8}>3000 ~ 5000 &#3647;</option>
+                                        <option value={9}>&ge; 5000 &#3647;</option>
                                     </Form.Select>
                                 </Col>
                                 <Col sm={3} className='mb-3'>
                                     <Form.Label>Time Estimation</Form.Label>
                                 </Col>
                                 <Col sm={9}>
-                                    <Form.Select value={problemRateTime} onChange={(event) => { setProblemRateTime(event.target.value) }} >
-                                        <option value="1">As Fast As Possible</option>
-                                        <option value="2">Within an Hour</option>
-                                        <option value="3">Within 3 Hours</option>
-                                        <option value="4">Within 8 Hours</option>
-                                        <option value="5">Within 1 Day</option>
-                                        <option value="6">Within 3 Days</option>
-                                        <option value="8">Within 1 Week</option>
-                                        <option value="9">Within 3 Weeks</option>
-                                        <option value="10">Within 1 Months</option>
+                                    <Form.Select value={problemRateTime} size='sm'
+                                        onChange={(event) => { setProblemRateTime(event.target.value) }} >
+                                        <option value={1}>As Fast As Possible</option>
+                                        <option value={2}>Within an Hour</option>
+                                        <option value={3}>Within 3 Hours</option>
+                                        <option value={4}>Within 8 Hours</option>
+                                        <option value={5}>Within 1 Day</option>
+                                        <option value={6}>Within 3 Days</option>
+                                        <option value={7}>Within 1 Week</option>
+                                        <option value={8}>Within 3 Weeks</option>
+                                        <option value={9}>Within 1 Months</option>
                                     </Form.Select>
                                 </Col>
                                 <Col sm={3} className='mb-3'>
                                     <Form.Label>Benefits Estimation</Form.Label>
                                 </Col>
                                 <Col sm={9}>
-                                    <Form.Select value={problemRateBnf} onChange={(event) => { setProblemRateBnf(event.target.value) }} >
-                                        <option value="6">Myself</option>
-                                        <option value="5">Some people</option>
-                                        <option value="4">a Group of people</option>
-                                        <option value="3">Some Group of people</option>
-                                        <option value="2">Most people in school</option>
-                                        <option value="1">Everyone in school</option>
+                                    <Form.Select value={problemRateBnf} size='sm'
+                                        onChange={(event) => { setProblemRateBnf(event.target.value) }} >
+                                        <option value={6}>Myself</option>
+                                        <option value={5}>Some people</option>
+                                        <option value={4}>a Group of people</option>
+                                        <option value={3}>Some Group of people</option>
+                                        <option value={2}>Most people in school</option>
+                                        <option value={1}>Everyone in school</option>
                                     </Form.Select>
                                 </Col>
                             </Row>
