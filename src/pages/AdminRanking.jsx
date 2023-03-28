@@ -2,6 +2,7 @@ import { collection, doc, getDocs, orderBy, query, updateDoc } from '@firebase/f
 import React, { useCallback, useEffect, useState } from 'react'
 import { useImperativeHandle } from 'react'
 import { Button, Container, Form, InputGroup, Pagination, Table } from 'react-bootstrap'
+import Plot from 'react-plotly.js'
 import AdminProblemCard from '../components/AdminProblemCard'
 import ProblemRankingTable from '../components/ProblemRankTable'
 import ProblemTable from '../components/ProblemTable'
@@ -19,27 +20,29 @@ const AdminRanking = () => {
 
     const [searchPage, setSearchPage] = useState(1);
 
-    
+    const problemCollectionRef = collection(db, "/user_problems")
+
+
     const updatedata = () => {
         console.log('updaterank')
-        data?.map((item) => { 
+        data?.map((item) => {
             console.log('updaterank' + item.data().problemUUID)
-            
+
             updateDoc(doc(problemCollectionRef, item.data().problemUUID), {
                 RankingRate: parseFloat(Math.sqrt(Math.pow(item.data().problemRate.costs, 2)
-                + Math.pow(item.data().problemRate.time, 2)
-                + Math.pow(item.data().problemRate.bnf, 2)).toFixed(2)),
+                    + Math.pow(item.data().problemRate.time, 2)
+                    + Math.pow(item.data().problemRate.bnf, 2)).toFixed(2)),
             })
         })
     }
-    
+
     const fetchProblem = useCallback(() => {
         const problemCollectionRef = collection(db, "user_problems")
         const adminProblemRef = query(problemCollectionRef, orderBy("RankingRate"))
         getDocs(adminProblemRef).then(res => console.log(res.docs[0]))
         const getData = async () => {
             const res = await getDocs(adminProblemRef)
-            setData(res.docs);
+            setData(res.docs.reverse());
         }
         getData();
         // updatedata();
@@ -50,19 +53,59 @@ const AdminRanking = () => {
     }, [user])
 
     function goNextPage(step) {
-        setSearchPage(searchPage + step)
+        setSearchPage(parseInt(searchPage) + step)
+        console.log(searchPage)
     }
 
     function goPrevPage(step) {
-        setSearchPage(searchPage - step)
+        setSearchPage(parseInt(searchPage) - step)
+        console.log(searchPage)
     }
+
+    let Array_cost = []
+    let Array_time = []
+    let Array_bnf = []
 
     return (
         <>
+            {data?.map((item, index) => {
+                Array_cost.push(item.data().problemRate.costs)
+                Array_time.push(item.data().problemRate.time)
+                Array_bnf.push(item.data().problemRate.bnf)
+            })}
             <Container>
                 <div className='mt-5'>
                     <div className='d-flex justify-content-center mb-4'>
                         <h1>Problem Ranking</h1>
+                    </div>
+                    <div className='text-center'>
+                        <Plot
+                            data={[{
+                                x: Array_cost,
+                                y: Array_time,
+                                z: Array_bnf,
+                                mode: 'markers',
+                                marker: {
+                                    size: 15,
+                                    line: {
+                                        color: 'rgba(217, 217, 217, 0.14)',
+                                        width: 0.5
+                                    },
+                                    opacity: 0.8
+                                },
+                                type: 'scatter3d'
+                            }]}
+                            layout={
+                                {
+                                    margin: {
+                                        l: 10,
+                                        r: 10,
+                                        b: 10,
+                                        t: 10
+                                    }
+                                }
+                            }
+                        />
                     </div>
                     <Form>
 
@@ -82,20 +125,26 @@ const AdminRanking = () => {
                 </div>
                 <Pagination className='mt-3 text-center justify-content-center' variant='danger'>
                     <Pagination.First onClick={() => { setSearchPage(1) }} />
-                    <Pagination.Prev onClick={() => { goPrevPage(1) }} />
-                    <Pagination.Item onClick={() => { setSearchPage(1) }}> 1</Pagination.Item>
-                    <Pagination.Ellipsis />
+                    {searchPage - 1 == 0 ? <><Pagination.Prev /></> :
+                        <>
+                            <Pagination.Prev onClick={() => { goPrevPage(1) }} />
+                            <Pagination.Item onClick={() => { goPrevPage(1) }}>{searchPage - 1}</Pagination.Item>
+                        </>}
 
-                    <Pagination.Item onClick={() => { goPrevPage(2) }}>{searchPage - 2}</Pagination.Item>
-                    <Pagination.Item onClick={() => { goPrevPage(1) }}>{searchPage - 1}</Pagination.Item>
                     <Pagination.Item active onClick={fetchProblem}>{searchPage}</Pagination.Item>
                     <Pagination.Item onClick={() => { goNextPage(1) }}>{searchPage + 1}</Pagination.Item>
-                    <Pagination.Item onClick={() => { goNextPage(2) }}>{searchPage + 2}</Pagination.Item>
 
-                    <Pagination.Ellipsis />
-                    <Pagination.Item onClick={() => { goNextPage(9) }}>{searchPage + 9}</Pagination.Item>
+                    {searchPage + 3 > parseInt((data.length / 20).toFixed(0)) ? <></> :
+                        <>
+                            <Pagination.Item onClick={() => { goNextPage(2) }}>{searchPage + 2}</Pagination.Item>
+                            <Pagination.Ellipsis />
+                            <Pagination.Item onClick={() => { setSearchPage(parseInt((data.length / 20).toFixed(0))) }}>{(data.length / 20).toFixed(0)}</Pagination.Item>
+                        </>}
+
+
+
                     <Pagination.Next onClick={() => { goNextPage(1) }} />
-                    <Pagination.Last />
+                    <Pagination.Last onClick={() => { setSearchPage(parseInt((data.length / 20).toFixed(0))) }} />
                 </Pagination>
             </Container>
             <Table className="table table-striped table-bordered table-sm" cellSpacing="0" width="100%">
@@ -119,6 +168,8 @@ const AdminRanking = () => {
                 <tbody>
 
                     {data?.filter(item => {
+                        return !item.data().status.includes('deleted')
+                    }).filter(item => {
                         return item.data().status.includes(searchStatus)
                     }).slice((searchPage * 20) - 20, searchPage * 20).map((item, index) => {
                         return <ProblemRankingTable item={item.data()} key={index} fetchy={fetchProblem} />

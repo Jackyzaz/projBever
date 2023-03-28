@@ -5,6 +5,10 @@ import StatusTags from './StatusTags';
 import { setDoc, doc, collection, updateDoc, Timestamp, deleteDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase'
 import { UserAuth } from '../contexts/AuthContext';
+import CostEst from './EstimatedOption/CostEst';
+import TimeEst from './EstimatedOption/TimeEst';
+import BenefitEst from './EstimatedOption/BenefitEst';
+import Plot from 'react-plotly.js';
 
 const AdminProblemCard = ({ item, fetchy }) => {
   const { user } = UserAuth()
@@ -83,7 +87,7 @@ const AdminProblemCard = ({ item, fetchy }) => {
           <Stack gap={3} className='d-flex mx-4 justify-content-between'>
             <StatusTags status={item.status} />
             <Button onClick={handleShow} variant={`outline-${statusBorder(item.status)}`} >Resolve Problem</Button>
-            <Button onClick={deleteProblem} variant={`outline-danger`} >Delete Post</Button>
+            <Button onClick={deleteProblem} variant={`outline-danger`} >Delete Problem</Button>
           </Stack>
         </div>
         {/* </Col> */}
@@ -141,6 +145,62 @@ const AdminProblemCard = ({ item, fetchy }) => {
           {item.imagesURLs.map((url) => {
             return <img className='m-auto my-3' src={url} width={300}></img>
           })}
+        </Modal.Body>
+        <Modal.Body>
+
+        <hr className=''></hr>
+          <Form.Group className='mb-3'>
+            <Row>
+              <Col sm={3} className='mb-3'>
+                <Form.Label>Budget Estimation</Form.Label>
+              </Col>
+              <Col sm={9}>
+                <Form.Select value={item.problemRate.costs} disabled
+                  size='sm' onChange={(event) => { setProblemRateCosts(event.target.value) }} >
+                  <CostEst />
+                </Form.Select>
+              </Col>
+              <Col sm={3} className='mb-3'>
+                <Form.Label>Time Estimation</Form.Label>
+              </Col>
+              <Col sm={9}>
+                <Form.Select value={item.problemRate.time} size='sm' disabled
+                  onChange={(event) => { setProblemRateTime(event.target.value) }} >
+                  <TimeEst />
+                </Form.Select>
+              </Col>
+              <Col sm={3} className='mb-3'>
+                <Form.Label>Benefits Estimation</Form.Label>
+              </Col>
+              <Col sm={9}>
+                <Form.Select value={item.problemRate.bnf} size='sm' disabled
+                  onChange={(event) => { setProblemRateBnf(event.target.value) }} >
+                  <BenefitEst />
+                </Form.Select>
+              </Col>
+            </Row>
+          </Form.Group>
+          <div className='text-center'>
+            <Plot
+              data={[
+                {
+                  type: 'scatterpolar',
+                  r: [10 - item.problemRate.costs, 10 - item.problemRate.time, item.problemRate.bnf/ 6 * 9],
+                  theta: ['Cost', 'Time', 'Benefits'],
+                  fill: 'toself'
+                },
+              ]}
+              layout={{
+                polar: {
+                  radialaxis: {
+                    visible: true,
+                    range: [0, 9]
+                  }
+                },
+                showlegend: false, width: '3rem', height: 500, title: 'Estimated'
+              }}
+            />
+          </div>
         </Modal.Body>
         <hr className=''></hr>
         <Form onSubmit={handleUpdate}>

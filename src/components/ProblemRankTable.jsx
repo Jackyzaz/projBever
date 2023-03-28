@@ -1,7 +1,11 @@
 import { collection, doc, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
+import Plot from 'react-plotly.js';
 import { db } from '../firebase';
+import BenefitEst from './EstimatedOption/BenefitEst';
+import CostEst from './EstimatedOption/CostEst';
+import TimeEst from './EstimatedOption/TimeEst';
 import StatusTags from './StatusTags';
 
 const ProblemRankingTable = ({ item, fetchy }) => {
@@ -19,6 +23,12 @@ const ProblemRankingTable = ({ item, fetchy }) => {
     const [problemRateTime, setProblemRateTime] = useState(item.problemRate.time);
     const [problemRateBnf, setProblemRateBnf] = useState(item.problemRate.bnf);
     const [problemRate, setProblemRate] = useState(item.RankingRate);
+
+    const CalRankRate = (problemRateCosts, problemRateTime, problemRateBnf) => {
+        return parseFloat(Math.sqrt(Math.pow(problemRateCosts, 2)
+            + Math.pow(problemRateTime, 2)
+            + Math.pow(problemRateBnf, 2))).toFixed(2)
+    }
 
     const problemCollectionRef = collection(db, "/user_problems")
     const handleUpdate = async (event) => {
@@ -42,6 +52,20 @@ const ProblemRankingTable = ({ item, fetchy }) => {
         handleClose()
     }
 
+    var trace = {
+        x: item.problemRate.costs, y: item.problemRate.time, z: item.problemRate.bnf,
+        mode: 'markers',
+        marker: {
+            size: 12,
+            line: {
+                color: 'rgba(217, 217, 217, 0.14)',
+                width: 0.5
+            },
+            opacity: 0.8
+        },
+        type: 'scatter3d'
+    };
+
     return (
         <>
             <tr>
@@ -54,15 +78,7 @@ const ProblemRankingTable = ({ item, fetchy }) => {
                         <td className='align-middle'>
                             <Form.Select value={problemRateCosts} disabled size='sm'
                                 onChange={(event) => { setProblemRateCosts(event.target.value) }} >
-                                <option value={1}> No Cost</option>
-                                <option value={2}>&le; 100 &#3647; </option>
-                                <option value={3}>100 ~ 300 &#3647;</option>
-                                <option value={4}>300 ~ 500 &#3647;</option>
-                                <option value={5}>500 ~ 1000 &#3647;</option>
-                                <option value={6}>1000 ~ 1500 &#3647;</option>
-                                <option value={7}>1500 ~ 3000 &#3647;</option>
-                                <option value={8}>3000 ~ 5000 &#3647;</option>
-                                <option value={9}>&ge; 5000 &#3647;</option>
+                                <CostEst />
                             </Form.Select>
                         </td>
                     ) : (
@@ -76,15 +92,7 @@ const ProblemRankingTable = ({ item, fetchy }) => {
                         <td className='align-middle'>
                             <Form.Select value={problemRateTime} disabled size='sm'
                                 onChange={(event) => { setProblemRateTime(event.target.value) }} >
-                                <option value={1}>As Fast As Possible</option>
-                                <option value={2}>Within an Hour</option>
-                                <option value={3}>Within 3 Hours</option>
-                                <option value={4}>Within 8 Hours</option>
-                                <option value={5}>Within 1 Day</option>
-                                <option value={6}>Within 3 Days</option>
-                                <option value={7}>Within 1 Week</option>
-                                <option value={8}>Within 3 Weeks</option>
-                                <option value={9}>Within 1 Months</option>
+                                <TimeEst />
                             </Form.Select>
                         </td>
 
@@ -99,23 +107,15 @@ const ProblemRankingTable = ({ item, fetchy }) => {
                         <td className='align-middle'>
                             <Form.Select value={problemRateBnf} disabled size='sm'
                                 onChange={(event) => { setProblemRateBnf(event.target.value) }} >
-                                <option value={6}>Myself</option>
-                                <option value={5}>Some people</option>
-                                <option value={4}>a Group of people</option>
-                                <option value={3}>Some Group of people</option>
-                                <option value={2}>Most people in school</option>
-                                <option value={1}>Everyone in school</option>
+                               <BenefitEst />
                             </Form.Select>
                         </td>
 
                     ) : (
-                        <td className='align-middle'>{item.problemRate}</td>
+                        <td className='align-middle'>{item.problemRate} </td>
                     )
                 )}
-                {/* <td>{item.problemRate.costs ? item.problemRate.costs : 0}</td> */}
-                {/* <td>{item.problemRate.time}</td>
-                <td>{item.problemRate.bnf}</td> */}
-                <td className='justify-content-center text-center align-middle'>{item.RankingRate}</td>
+                <td className='justify-content-center text-end align-middle pe-4'>{item.RankingRate} <span className="fa fa-star checked"></span></td>
                 <td className='justify-content-center text-center'><StatusTags click={handleShow} status={item.status} /></td>
             </tr>
 
@@ -174,7 +174,7 @@ const ProblemRankingTable = ({ item, fetchy }) => {
                 <hr className=''></hr>
                 <Form onSubmit={handleUpdate}>
                     <Modal.Body>
-                        <h4 style={{ 'fontWeight': 'bold' }} className='mb-4'>Estimated Rate</h4>
+                        <h4 style={{ 'fontWeight': 'bold' }} className='mb-4'>Estimated Rate - {CalRankRate(problemRateCosts,problemRateTime,problemRateBnf)}  <span className="fa fa-star checked"></span></h4>
                         <Form.Group className='mb-3'>
                             <Row>
                                 <Col sm={3} className='mb-3'>
@@ -183,15 +183,7 @@ const ProblemRankingTable = ({ item, fetchy }) => {
                                 <Col sm={9}>
                                     <Form.Select value={problemRateCosts}
                                         size='sm' onChange={(event) => { setProblemRateCosts(event.target.value) }} >
-                                        <option value={1}> No Cost</option>
-                                        <option value={2}>&le; 100 &#3647; </option>
-                                        <option value={3}>100 ~ 300 &#3647;</option>
-                                        <option value={4}>300 ~ 500 &#3647;</option>
-                                        <option value={5}>500 ~ 1000 &#3647;</option>
-                                        <option value={6}>1000 ~ 1500 &#3647;</option>
-                                        <option value={7}>1500 ~ 3000 &#3647;</option>
-                                        <option value={8}>3000 ~ 5000 &#3647;</option>
-                                        <option value={9}>&ge; 5000 &#3647;</option>
+                                        <CostEst />
                                     </Form.Select>
                                 </Col>
                                 <Col sm={3} className='mb-3'>
@@ -200,15 +192,7 @@ const ProblemRankingTable = ({ item, fetchy }) => {
                                 <Col sm={9}>
                                     <Form.Select value={problemRateTime} size='sm'
                                         onChange={(event) => { setProblemRateTime(event.target.value) }} >
-                                        <option value={1}>As Fast As Possible</option>
-                                        <option value={2}>Within an Hour</option>
-                                        <option value={3}>Within 3 Hours</option>
-                                        <option value={4}>Within 8 Hours</option>
-                                        <option value={5}>Within 1 Day</option>
-                                        <option value={6}>Within 3 Days</option>
-                                        <option value={7}>Within 1 Week</option>
-                                        <option value={8}>Within 3 Weeks</option>
-                                        <option value={9}>Within 1 Months</option>
+                                        <TimeEst />
                                     </Form.Select>
                                 </Col>
                                 <Col sm={3} className='mb-3'>
@@ -217,16 +201,34 @@ const ProblemRankingTable = ({ item, fetchy }) => {
                                 <Col sm={9}>
                                     <Form.Select value={problemRateBnf} size='sm'
                                         onChange={(event) => { setProblemRateBnf(event.target.value) }} >
-                                        <option value={6}>Myself</option>
-                                        <option value={5}>Some people</option>
-                                        <option value={4}>a Group of people</option>
-                                        <option value={3}>Some Group of people</option>
-                                        <option value={2}>Most people in school</option>
-                                        <option value={1}>Everyone in school</option>
+                                       <BenefitEst />
                                     </Form.Select>
                                 </Col>
                             </Row>
                         </Form.Group>
+                    </Modal.Body>
+                    <Modal.Body>
+                        <div className='justify-content-center text-center mx-auto'>
+                            <Plot
+                                data={[
+                                    {
+                                        type: 'scatterpolar',
+                                        r: [10-problemRateCosts, 10-problemRateTime, problemRateBnf/6*9],
+                                        theta: ['Cost', 'Time', 'Benefits'],
+                                        fill: 'toself'
+                                    },
+                                ]}
+                                layout={{
+                                    polar: {
+                                        radialaxis: {
+                                            visible: true,
+                                            range: [0, 9]
+                                        }
+                                    },
+                                    showlegend: false, width: '3rem', height: 500, title: 'Estimated'
+                                }}
+                            />
+                        </div>
                     </Modal.Body>
                     <hr className=''></hr>
                     <Modal.Body>
@@ -242,6 +244,7 @@ const ProblemRankingTable = ({ item, fetchy }) => {
                                         <option value="inprogress">In Progress</option>
                                         <option value="success">Success</option>
                                         <option value="fail">Rejected</option>
+                                        <option value="deleted">Deleted</option>
                                     </Form.Select>
                                 </Col>
                             </Row>

@@ -9,6 +9,10 @@ import { UserAuth } from '../contexts/AuthContext'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { v4 } from "uuid";
 import { Loading } from '../components/Loading';
+import CostEst from '../components/EstimatedOption/CostEst';
+import TimeEst from '../components/EstimatedOption/TimeEst';
+import BenefitEst from '../components/EstimatedOption/BenefitEst';
+import Plot from 'react-plotly.js';
 
 function ReportProblem() {
 
@@ -112,17 +116,15 @@ function ReportProblem() {
             .then(() => { if (Image != []) { alert("All image is upload!") } })
             .catch((err) => console.log(err));
 
-        // setImagesURLs(ImageUrls);
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setError('')
         let rankingrate = parseFloat(Math.sqrt(Math.pow(problemRateCosts, 2)
-        + Math.pow(problemRateTime, 2)
-        + Math.pow(problemRateBnf, 2))).toFixed(2)
+            + Math.pow(problemRateTime, 2)
+            + Math.pow(problemRateBnf, 2))).toFixed(2)
         try {
-            // console.log(imagesURLs)
             if (images.length !== 0) handleUpload()
             await setDoc(doc(problemCollectionRef, problemUUID), {
                 problemUUID,
@@ -185,31 +187,15 @@ function ReportProblem() {
                             <Form.Group className="mb-3">
                                 <Form.Label>Budget Estimation</Form.Label>
                                 <Form.Select value={problemRateCosts} onChange={(event) => { setProblemRateCosts(event.target.value) }} >
-                                    <option value={1}> No Cost</option>
-                                    <option value={2}>&le; 100 &#3647; </option>
-                                    <option value={3}>100 ~ 300 &#3647;</option>
-                                    <option value={4}>300 ~ 500 &#3647;</option>
-                                    <option value={5}>500 ~ 1000 &#3647;</option>
-                                    <option value={6}>1000 ~ 1500 &#3647;</option>
-                                    <option value={7}>1500 ~ 3000 &#3647;</option>
-                                    <option value={8}>3000 ~ 5000 &#3647;</option>
-                                    <option value={9}>&ge; 5000 &#3647;</option>
+                                    <CostEst />
                                 </Form.Select>
                             </Form.Group>
                         </Col>
                         <Col>
                             <Form.Group className="mb-3">
-                                <Form.Label>Time EstimatiDDDon</Form.Label>
+                                <Form.Label>Time Estimation</Form.Label>
                                 <Form.Select value={problemRateTime} onChange={(event) => { setProblemRateTime(event.target.value) }} >
-                                    <option value={1}>As Fast As Possible</option>
-                                    <option value={2}>Within an Hour</option>
-                                    <option value={3}>Within 3 Hours</option>
-                                    <option value={4}>Within 8 Hours</option>
-                                    <option value={5}>Within 1 Day</option>
-                                    <option value={6}>Within 3 Days</option>
-                                    <option value={7}>Within 1 Week</option>
-                                    <option value={8}>Within 3 Weeks</option>
-                                    <option value={9}>Within 1 Months</option>
+                                    <TimeEst />
                                 </Form.Select>
                             </Form.Group>
                         </Col>
@@ -217,16 +203,32 @@ function ReportProblem() {
                             <Form.Group className="mb-3">
                                 <Form.Label>Benefits Estimation</Form.Label>
                                 <Form.Select value={problemRateBnf} onChange={(event) => { setProblemRateBnf(event.target.value) }} >
-                                    <option value={6}>Myself</option>
-                                    <option value={5}>Some people</option>
-                                    <option value={4}>a Group of people</option>
-                                    <option value={3}>Some Group of people</option>
-                                    <option value={2}>Most people in school</option>
-                                    <option value={1}>Everyone in school</option>
+                                    <BenefitEst />
                                 </Form.Select>
                             </Form.Group>
                         </Col>
                     </Row>
+                    <div className='text-center'>
+                        <Plot
+                            data={[
+                                {
+                                    type: 'scatterpolar',
+                                    r: [10 - problemRateCosts, 10 - problemRateTime, problemRateBnf/6*9],
+                                    theta: ['Cost', 'Time', 'Benefits'],
+                                    fill: 'toself'
+                                },
+                            ]}
+                            layout={{
+                                polar: {
+                                    radialaxis: {
+                                        visible: true,
+                                        range: [0, 9]
+                                    }
+                                },
+                                showlegend: false, width: '3rem', height: 500, title: 'Estimated'
+                            }}
+                        />
+                    </div>
 
 
                     <Button className="mt-3" variant="primary" type="submit">
