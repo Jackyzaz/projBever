@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button, CardGroup, Col, Container, Form, InputGroup, Pagination, Row, Stack } from 'react-bootstrap'
 import { useNavigate, Link } from 'react-router-dom';
-import ProblemCard from '../components/ProblemCard';
-import { UserAuth } from '../contexts/AuthContext';
+import ProblemCard from '../../components/ProblemCard';
+import { UserAuth } from '../../contexts/AuthContext';
 import { collection, doc, getDocs, query, where, deleteDoc, Timestamp, orderBy, limit } from 'firebase/firestore'
-import { db, auth, storage } from '../firebase'
-import AdminProblemCard from '../components/AdminProblemCard';
+import { db, auth, storage } from '../../firebase'
+import AdminProblemCard from '../../components/AdminProblemCard';
 
-
-const AdminDashboard = () => {
+const SCDashboard = () => {
   const { user, logout } = UserAuth();
   const [data, setData] = useState([]);
   const [searchProblem, setSearchProblem] = useState('');
@@ -46,16 +45,16 @@ const AdminDashboard = () => {
   return (
     <>
       <Container className='my-5'>
-        <h1 className='text-center'>Admin Dashboard</h1>
+        <h1 className='text-center'>Council Dashboard</h1>
         <div className='mt-3 text-center'>
-          <h5>Admin Email : {user && user.email}</h5>
+          <h5>Council Email : {user && user.email}</h5>
           <div className="mt-3">
           </div>
         </div>
         <hr className='text-center mt-5' ></hr>
         <div className='mt-5'>
           <div className='d-flex justify-content-center mb-4'>
-            <h1>School Problem Monitor</h1>
+            <h1>Student Council Problem Monitor</h1>
           </div>
           <Form>
 
@@ -71,7 +70,7 @@ const AdminDashboard = () => {
                 <option value="success">Success</option>
                 <option value="fail">Rejected</option>
               </Form.Select>
-              <Button onClick={fetchProblem} variant="danger">&#8635;</Button>
+              <Button onClick={fetchProblem} variant="success">&#8635;</Button>
             </InputGroup>
           </Form>
         </div>
@@ -103,6 +102,8 @@ const AdminDashboard = () => {
           {data?.filter(item => {
             return !item.data().status.includes('deleted')
           }).filter(item => {
+            return item.data().department?.includes('sc')
+          }).filter(item => {
             return item.data().status.includes(searchStatus)
           }).filter(item => {
             return item.data().problemName.includes(searchProblem)
@@ -116,4 +117,4 @@ const AdminDashboard = () => {
   )
 }
 
-export default AdminDashboard
+export default SCDashboard

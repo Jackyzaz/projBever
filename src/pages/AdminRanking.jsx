@@ -80,29 +80,86 @@ const AdminRanking = () => {
                     </div>
                     <div className='text-center'>
                         <Plot
-                            data={[{
-                                x: Array_cost,
-                                y: Array_time,
-                                z: Array_bnf,
-                                mode: 'markers',
-                                marker: {
-                                    size: 15,
-                                    line: {
-                                        color: 'rgba(217, 217, 217, 0.14)',
-                                        width: 0.5
+                            data={[
+                                {
+                                    x: Array_cost,
+                                    y: Array_time,
+                                    z: Array_bnf,
+                                    mode: 'markers',
+                                    marker: {
+                                        size: 15,
+                                        line: {
+                                            color: 'rgba(217, 217, 217, 0.14)',
+                                            width: 0.5
+                                        },
+                                        opacity: 0.8
                                     },
-                                    opacity: 0.8
-                                },
-                                type: 'scatter3d'
-                            }]}
+                                    type: 'scatter3d'
+                                }, 
+                                {
+                                    x: Array_cost,
+                                    y: Array_time,
+                                    z: Array_bnf,
+                                    mode: 'markers',
+                                    marker: {
+                                        size: 15,
+                                        line: {
+                                            color: 'rgba(217, 217, 217, 0.14)',
+                                            width: 0.5
+                                        },
+                                        opacity: 0.4
+                                    },
+                                    opacity: 0.2,
+                                    type: 'mesh3d'
+                                }]}
                             layout={
                                 {
                                     margin: {
                                         l: 10,
                                         r: 10,
-                                        b: 10,
-                                        t: 10
-                                    }
+                                        b: 20
+                                    },
+                                    title: '3D Scatter & Cluster Problem',
+                                    xaxis: {
+                                        title: {
+                                          text: 'xdwad Axis',
+                                          font: {
+                                            family: 'Courier New, monospace',
+                                            size: 18,
+                                            color: '#7f7f7f'
+                                          }
+                                        },
+                                      },
+                                      yaxis: {
+                                        title: {
+                                          text: 'ydawd Axis',
+                                          font: {
+                                            family: 'Courier New, monospace',
+                                            size: 18,
+                                            color: '#7f7f7f'
+                                          }
+                                        }
+                                      },
+                                      zaxis: {
+                                        title: {
+                                          text: 'x Adwadxis',
+                                          font: {
+                                            family: 'Courier New, monospace',
+                                            size: 18,
+                                            color: '#7f7f7f'
+                                          }
+                                        },
+                                      },
+                                      zaxis: {
+                                        title: {
+                                          text: 'z Axis',
+                                          font: {
+                                            family: 'Courier New, monospace',
+                                            size: 18,
+                                            color: '#7f7f7f'
+                                          }
+                                        }
+                                      }
                                 }
                             }
                         />

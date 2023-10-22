@@ -37,25 +37,16 @@ function ReportProblem() {
 
 
 
-    if (!user.uid) {
-        return <Loading />
-    }
-
-    if (user.isAdmin) {
-        return <Navigate to='/admin/dashboard' />
-    }
-
+    
     // on tag add/edit/remove
-
+    
     const problemCollectionRef = collection(db, "/user_problems")
-
+    
     const onTagChange = useCallback((e) => {
-        console.log("CHANGED:", e.detail.tagify.getCleanValue() // Same as above, without the extra properties
-        )
+        // console.log("CHANGED:", e.detail.tagify.getCleanValue()) // Same as above, without the extra properties
         setProblemTags(e.detail.tagify.getCleanValue())
     }, [])
-
-
+    
     useEffect(() => {
         if (images.length < 1) return;
         const previewImageUrls = [];
@@ -66,9 +57,15 @@ function ReportProblem() {
             console.log(tempImageUrls)
         });
         setPreviewImageURLs(previewImageUrls);
-        // setImagesURLs(tempImageUrls)
     }, [images]);
 
+    if (!user.uid) {
+        return <Loading />
+    }
+
+    if (user.isAdmin) {
+        return <Navigate to='/admin/dashboard' />
+    }
     function onImageChange(e) {
         setImages([...e.target.files]);
     }
@@ -147,93 +144,54 @@ function ReportProblem() {
             console.log(err.message)
         }
     }
-    console.log("images: ", images);
-    console.log("urls", imagesURLs);
+    // console.log("images: ", images);
+    // console.log("urls", imagesURLs);
 
     return (
         <>
             <Container className='my-5'>
                 <h1 className='text-center mb-3'>Problem Reporter</h1>
-                <Form className='d-grid' onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3" controlId="problem_name">
-                        <Form.Label>Your Problem Name</Form.Label>
-                        <Form.Control type="text" placeholder="Enter Your Problem Name ex. s" onChange={(event) => setProblemName(event.target.value)} />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>Add Image</Form.Label>
-                        <Form.Control type="file" multiple placeholder="Add Image" onChange={handleChange} />
-                        {previewImageURLs.map((imageSrc, idx) => (
-                            <Image className="mt-3 border shadow-lg rounded" height={180} key={idx} src={imageSrc} />
-                        ))}
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="problem_name">
-                        <Form.Label>Describe Problem</Form.Label>
-                        <Form.Control as="textarea" type="text" placeholder="Describe Your Problem" onChange={(event) => setProblemInfo(event.target.value)} />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" controlId="problem_name">
-                        <Form.Label>Tag Problem</Form.Label>
-                        <Tags
-                            tagifyRef={tagifyRef} // optional Ref object for the Tagify instance itself, to get access to  inner-methods
-                            defaultValue="ปัญหาโรงเรียน, ปัญหาห้องน้ำ, ปัญหาขยะ"
-                            onChange={onTagChange}
-                        />
-                    </Form.Group>
-                    <hr />
-                    <h2 className='text-center my-3'>Rate your Problem</h2>
+                <Form className='' onSubmit={handleSubmit}>
 
                     <Row>
-                        <Col>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Budget Estimation</Form.Label>
-                                <Form.Select value={problemRateCosts} onChange={(event) => { setProblemRateCosts(event.target.value) }} >
-                                    <CostEst />
-                                </Form.Select>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Time Estimation</Form.Label>
-                                <Form.Select value={problemRateTime} onChange={(event) => { setProblemRateTime(event.target.value) }} >
-                                    <TimeEst />
-                                </Form.Select>
-                            </Form.Group>
-                        </Col>
-                        <Col>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Benefits Estimation</Form.Label>
-                                <Form.Select value={problemRateBnf} onChange={(event) => { setProblemRateBnf(event.target.value) }} >
-                                    <BenefitEst />
-                                </Form.Select>
-                            </Form.Group>
-                        </Col>
+                        <Form.Group className="mb-3" controlId="problem_name">
+                            <Form.Label>Your Problem Name</Form.Label>
+                            <Form.Control type="text" placeholder="Enter Your Problem Name" onChange={(event) => setProblemName(event.target.value)} />
+                        </Form.Group>
                     </Row>
-                    <div className='text-center'>
-                        <Plot
-                            data={[
-                                {
-                                    type: 'scatterpolar',
-                                    r: [10 - problemRateCosts, 10 - problemRateTime, problemRateBnf/6*9],
-                                    theta: ['Cost', 'Time', 'Benefits'],
-                                    fill: 'toself'
-                                },
-                            ]}
-                            layout={{
-                                polar: {
-                                    radialaxis: {
-                                        visible: true,
-                                        range: [0, 9]
-                                    }
-                                },
-                                showlegend: false, width: '3rem', height: 500, title: 'Estimated'
-                            }}
-                        />
+                    <Row>
+
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Label>Add Image</Form.Label>
+                            <Form.Control type="file" multiple placeholder="Add Image" onChange={handleChange} />
+                            {previewImageURLs.map((imageSrc, idx) => (
+                                <Image className="mt-3 border shadow-lg rounded" height={180} key={idx} src={imageSrc} />
+                            ))}
+                        </Form.Group>
+                    </Row>
+                    <Row>
+                        <Form.Group className="mb-3" controlId="problem_name">
+                            <Form.Label>Describe Problem</Form.Label>
+                            <Form.Control as="textarea" type="text" placeholder="Describe Your Problem" onChange={(event) => setProblemInfo(event.target.value)} />
+                        </Form.Group>
+                    </Row>
+                    <Row>
+
+                        <Form.Group className="mb-3" controlId="problem_name">
+                            <Form.Label>Tag Problem</Form.Label>
+                            <Tags
+                                tagifyRef={tagifyRef} // optional Ref object for the Tagify instance itself, to get access to  inner-methods
+                                defaultValue="ปัญหาโรงเรียน, ปัญหาห้องน้ำ, ปัญหาขยะ"
+                                onChange={onTagChange}
+                            />
+                        </Form.Group>
+                    </Row>
+
+                    <div className='d-grid'>
+                        <Button className="mt-3" variant="primary" type="submit">
+                            Submit
+                        </Button>
                     </div>
-
-
-                    <Button className="mt-3" variant="primary" type="submit">
-                        Submit
-                    </Button>
                 </Form>
             </Container>
         </>

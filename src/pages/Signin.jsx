@@ -18,7 +18,7 @@ const Signin = () => {
     setError('')
     try {
       await signIn(email, password)
-      navigate('/dashboard')
+      navigate('/admin/dashboard')
     } catch (err) {
       setError(err.message)
       console.log(err.message)
@@ -28,7 +28,7 @@ const Signin = () => {
 
   return (
     <>
-      <Container className='justify-content-center mt-5 w-50'>
+      <Container className='justify-content-center mt-5'>
         <h1 className='text-center mb-3'>Sign In</h1>
         <Form className='d-grid mb-5' onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="formBasicEmail">

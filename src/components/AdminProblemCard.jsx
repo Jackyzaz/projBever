@@ -20,18 +20,49 @@ const AdminProblemCard = ({ item, fetchy }) => {
   const [error, setError] = useState('')
   const [orimts, setOrimts] = useState(item.mts)
   const [status, setStatus] = useState(item.status)
-  const [mts, setMts] = useState('')
+  const [department, setDepartment] = useState(item?.departmant)
+  const [mts, setMts] = useState({
+    author: user.email,
+    restime: Timestamp.fromDate(new Date()),
+    massage: item.status
+  })
   const [costs, setCosts] = useState(0)
-
+  const [problemRateCosts, setProblemRateCosts] = useState(item.problemRate.costs);
+  const [problemRateTime, setProblemRateTime] = useState(item.problemRate.time);
+  const [problemRateBnf, setProblemRateBnf] = useState(item.problemRate.bnf);
+  const CalRankRate = (problemRateCosts, problemRateTime, problemRateBnf) => {
+    return parseFloat(Math.sqrt(Math.pow(problemRateCosts, 2)
+      + Math.pow(problemRateTime, 2)
+      + Math.pow(problemRateBnf, 2))).toFixed(2)
+  }
   const problemCollectionRef = collection(db, "/user_problems")
   const handleUpdate = async (event) => {
     event.preventDefault()
     setError('')
+    if (item.status == status) {
+
+    } else if (status == 'inprogress') {
+      await updateDoc(doc(problemCollectionRef, item.problemUUID), {
+        initprogress: {
+          author: user.email,
+          restime: Timestamp.fromDate(new Date()),
+        }
+      })
+    } else if (status == 'success') {
+      await updateDoc(doc(problemCollectionRef, item.problemUUID), {
+        initsuccess: {
+          author: user.email,
+          restime: Timestamp.fromDate(new Date()),
+        }
+      })
+    }
     await updateDoc(doc(problemCollectionRef, item.problemUUID), {
       status: status,
+      department: department,
       mts: mts,
       cost: costs,
     })
+
     fetchy()
     handleClose()
   }
@@ -69,7 +100,7 @@ const AdminProblemCard = ({ item, fetchy }) => {
 
   return (
     <div>
-      <Card className='mt-4 box' border={statusBorder(item.status)} style={{ width: '25rem' }}>
+      <Card className='mt-4 box shadow mb-5 bg-white rounded' border={statusBorder(item.status)} style={{ width: '25rem' }}>
         <Card.Img style={{ height: '25rem' }} variant="top" src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.teamgroup.co.th/wp-content/themes/consultix/images/no-image-found-360x260.png'} />
         {/* <Row> */}
         {/* <Col sm={3}>
@@ -148,14 +179,18 @@ const AdminProblemCard = ({ item, fetchy }) => {
         </Modal.Body>
         <Modal.Body>
 
-        <hr className=''></hr>
+          <hr className=''></hr>
+          
+        </Modal.Body>
+        <Modal.Body>
+          <h4 style={{ 'fontWeight': 'bold' }} className='mb-4'>Estimated Rate - {CalRankRate(problemRateCosts, problemRateTime, problemRateBnf)}  <span className="fa fa-star checked"></span></h4>
           <Form.Group className='mb-3'>
             <Row>
               <Col sm={3} className='mb-3'>
                 <Form.Label>Budget Estimation</Form.Label>
               </Col>
               <Col sm={9}>
-                <Form.Select value={item.problemRate.costs} disabled
+                <Form.Select value={problemRateCosts}
                   size='sm' onChange={(event) => { setProblemRateCosts(event.target.value) }} >
                   <CostEst />
                 </Form.Select>
@@ -164,7 +199,7 @@ const AdminProblemCard = ({ item, fetchy }) => {
                 <Form.Label>Time Estimation</Form.Label>
               </Col>
               <Col sm={9}>
-                <Form.Select value={item.problemRate.time} size='sm' disabled
+                <Form.Select value={problemRateTime} size='sm'
                   onChange={(event) => { setProblemRateTime(event.target.value) }} >
                   <TimeEst />
                 </Form.Select>
@@ -173,19 +208,23 @@ const AdminProblemCard = ({ item, fetchy }) => {
                 <Form.Label>Benefits Estimation</Form.Label>
               </Col>
               <Col sm={9}>
-                <Form.Select value={item.problemRate.bnf} size='sm' disabled
+                <Form.Select value={problemRateBnf} size='sm'
                   onChange={(event) => { setProblemRateBnf(event.target.value) }} >
                   <BenefitEst />
                 </Form.Select>
               </Col>
             </Row>
           </Form.Group>
+        </Modal.Body>
+        <Modal.Body>
+
           <div className='text-center'>
+
             <Plot
               data={[
                 {
                   type: 'scatterpolar',
-                  r: [10 - item.problemRate.costs, 10 - item.problemRate.time, item.problemRate.bnf/ 6 * 9],
+                  r: [10 - item.problemRate.costs, 10 - item.problemRate.time, item.problemRate.bnf / 6 * 9],
                   theta: ['Cost', 'Time', 'Benefits'],
                   fill: 'toself'
                 },
@@ -205,7 +244,6 @@ const AdminProblemCard = ({ item, fetchy }) => {
         <hr className=''></hr>
         <Form onSubmit={handleUpdate}>
           <Modal.Body>
-            <h4 style={{ 'fontWeight': 'bold' }} className='mb-4'>Resolve</h4>
             <Form.Group className='mb-3'>
               <Row>
                 <Col sm={3}>
@@ -217,6 +255,25 @@ const AdminProblemCard = ({ item, fetchy }) => {
                     <option value="inprogress">In Progress</option>
                     <option value="success">Success</option>
                     <option value="fail">Rejected</option>
+                    <option value="deleted">Delete</option>
+                  </Form.Select>
+                </Col>
+              </Row>
+            </Form.Group>
+            <Form.Group className='mb-3'>
+              <Row>
+                <Col sm={3}>
+                  <Form.Label>Department</Form.Label>
+                </Col>
+                <Col sm={9}>
+                  <Form.Select value={department} onChange={(event) => { setDepartment(event.target.value) }}>
+                    <option >Select Department</option>
+                    <option value="academic">Department of Academic</option>
+                    <option value="building">Department of Building</option>
+                    <option value="welfare">Department of Welfare</option>
+                    <option value="finace">Department of Finace</option>
+                    <option value="sc">Student Council</option>
+                    <option value="director">Department of Director</option>
                   </Form.Select>
                 </Col>
               </Row>

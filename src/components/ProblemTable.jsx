@@ -1,6 +1,8 @@
+import { collection, doc, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react'
 import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 import Plot from 'react-plotly.js';
+import { db } from '../firebase';
 import BenefitEst from './EstimatedOption/BenefitEst';
 import CostEst from './EstimatedOption/CostEst';
 import TimeEst from './EstimatedOption/TimeEst';
@@ -16,6 +18,8 @@ const ProblemTable = ({ item, fetchy, key }) => {
     const [status, setStatus] = useState(item.status)
     const [mts, setMts] = useState('')
     const [costs, setCosts] = useState('')
+
+    const problemCollectionRef = collection(db, "/user_problems")
 
     const handleUpdate = async (event) => {
         event.preventDefault()
@@ -90,64 +94,64 @@ const ProblemTable = ({ item, fetchy, key }) => {
                         return <img className='m-auto my-3' src={url} width={300}></img>
                     })}
                 </Modal.Body>
-                <Modal.Body>
-
-                    <hr className=''></hr>
-                    <Form.Group className='mb-3'>
-                        <Row>
-                            <Col sm={3} className='mb-3'>
-                                <Form.Label>Budget Estimation</Form.Label>
-                            </Col>
-                            <Col sm={9}>
-                                <Form.Select value={item.problemRate.costs} disabled
-                                    size='sm' onChange={(event) => { setProblemRateCosts(event.target.value) }} >
-                                    <CostEst />
-                                </Form.Select>
-                            </Col>
-                            <Col sm={3} className='mb-3'>
-                                <Form.Label>Time Estimation</Form.Label>
-                            </Col>
-                            <Col sm={9}>
-                                <Form.Select value={item.problemRate.time} size='sm' disabled
-                                    onChange={(event) => { setProblemRateTime(event.target.value) }} >
-                                    <TimeEst />
-                                </Form.Select>
-                            </Col>
-                            <Col sm={3} className='mb-3'>
-                                <Form.Label>Benefits Estimation</Form.Label>
-                            </Col>
-                            <Col sm={9}>
-                                <Form.Select value={item.problemRate.bnf} size='sm' disabled
-                                    onChange={(event) => { setProblemRateBnf(event.target.value) }} >
-                                    <BenefitEst />
-                                </Form.Select>
-                            </Col>
-                        </Row>
-                    </Form.Group>
-                    <div className='text-center'>
-                        <Plot
-                            data={[
-                                {
-                                    type: 'scatterpolar',
-                                    r: [10 - item.problemRate.costs, 10 - item.problemRate.time, item.problemRate.bnf / 6 * 9],
-                                    theta: ['Cost', 'Time', 'Benefits'],
-                                    fill: 'toself'
-                                },
-                            ]}
-                            layout={{
-                                polar: {
-                                    radialaxis: {
-                                        visible: true,
-                                        range: [0, 9]
-                                    }
-                                },
-                                showlegend: false, width: '3rem', height: 500, title: 'Estimated'
-                            }}
-                        />
-                    </div>
-                </Modal.Body>
-                <hr className=''></hr>
                 <Form onSubmit={handleUpdate}>
+                    <Modal.Body>
+
+                        <hr className=''></hr>
+                        <Form.Group className='mb-3'>
+                            <Row>
+                                <Col sm={3} className='mb-3'>
+                                    <Form.Label>Budget Estimation</Form.Label>
+                                </Col>
+                                <Col sm={9}>
+                                    <Form.Select value={item.problemRate.costs} disabled
+                                        size='sm' onChange={(event) => { setProblemRateCosts(event.target.value) }} >
+                                        <CostEst />
+                                    </Form.Select>
+                                </Col>
+                                <Col sm={3} className='mb-3'>
+                                    <Form.Label>Time Estimation</Form.Label>
+                                </Col>
+                                <Col sm={9}>
+                                    <Form.Select value={item.problemRate.time} size='sm' disabled
+                                        onChange={(event) => { setProblemRateTime(event.target.value) }} >
+                                        <TimeEst />
+                                    </Form.Select>
+                                </Col>
+                                <Col sm={3} className='mb-3'>
+                                    <Form.Label>Benefits Estimation</Form.Label>
+                                </Col>
+                                <Col sm={9}>
+                                    <Form.Select value={item.problemRate.bnf} size='sm' disabled
+                                        onChange={(event) => { setProblemRateBnf(event.target.value) }} >
+                                        <BenefitEst />
+                                    </Form.Select>
+                                </Col>
+                            </Row>
+                        </Form.Group>
+                        <div className='text-center'>
+                            <Plot
+                                data={[
+                                    {
+                                        type: 'scatterpolar',
+                                        r: [10 - item.problemRate.costs, 10 - item.problemRate.time, item.problemRate.bnf / 6 * 9],
+                                        theta: ['Cost', 'Time', 'Benefits'],
+                                        fill: 'toself'
+                                    },
+                                ]}
+                                layout={{
+                                    polar: {
+                                        radialaxis: {
+                                            visible: true,
+                                            range: [0, 9]
+                                        }
+                                    },
+                                    showlegend: false, width: '3rem', height: 500, title: 'Estimated'
+                                }}
+                            />
+                        </div>
+                    </Modal.Body>
+                    <hr className=''></hr>
                     <Modal.Body>
                         <h4 style={{ 'fontWeight': 'bold' }} className='mb-4'>Resolve</h4>
                         <Form.Group className='mb-3'>
@@ -161,6 +165,8 @@ const ProblemTable = ({ item, fetchy, key }) => {
                                         <option value="inprogress">In Progress</option>
                                         <option value="success">Success</option>
                                         <option value="fail">Rejected</option>
+                                        <option value="deleted">Deleted</option>
+
                                     </Form.Select>
                                 </Col>
                             </Row>

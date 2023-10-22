@@ -22,7 +22,6 @@ const ProblemRankingTable = ({ item, fetchy }) => {
     const [problemRateCosts, setProblemRateCosts] = useState(item.problemRate.costs);
     const [problemRateTime, setProblemRateTime] = useState(item.problemRate.time);
     const [problemRateBnf, setProblemRateBnf] = useState(item.problemRate.bnf);
-    const [problemRate, setProblemRate] = useState(item.RankingRate);
 
     const CalRankRate = (problemRateCosts, problemRateTime, problemRateBnf) => {
         return parseFloat(Math.sqrt(Math.pow(problemRateCosts, 2)

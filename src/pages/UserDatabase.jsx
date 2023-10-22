@@ -1,33 +1,32 @@
-import { collection, getDocs, orderBy, query } from '@firebase/firestore'
+import { collection, getDocs, orderBy, query, where } from '@firebase/firestore'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Button, Container, Form, InputGroup, Pagination, Table } from 'react-bootstrap'
-import ProblemTable from '../components/ProblemTable'
 import { UserAuth } from '../contexts/AuthContext'
 import { db } from '../firebase'
+import UserTable from '../components/UserTable'
 
-const AdminDatabase = () => {
+const UserDatabase = () => {
     const { user } = UserAuth()
 
     const [data, setData] = useState([])
     const [searchStatus, setSearchStatus] = useState('')
-    const [searchProblem, setSearchProblem] = useState('');
+    const [searchEmail, setSearchEmail] = useState('');
 
     const [searchPage, setSearchPage] = useState(1);
 
+    const userCollectionRef = collection(db, "/user_db")
 
-    const fetchProblem = useCallback(() => {
-        const problemCollectionRef = collection(db, "user_problems")
-        const adminProblemRef = query(problemCollectionRef, orderBy("reportDate"))
-        getDocs(adminProblemRef).then(res => console.log(res.docs[0]))
+    const getUserInfo = useCallback(() => {
+        getDocs(userCollectionRef).then(res => console.log(res.docs[0]))
         const getData = async () => {
-            const res = await getDocs(adminProblemRef)
+            const res = await getDocs(userCollectionRef)
             setData(res.docs.reverse());
         }
         getData();
     }, [user])
 
     useEffect(() => {
-        fetchProblem();
+        getUserInfo();
     }, [user])
 
     function goNextPage(step) {
@@ -43,21 +42,15 @@ const AdminDatabase = () => {
             <Container>
                 <div className='mt-5'>
                     <div className='d-flex justify-content-center mb-4'>
-                        <h1>Problem Database</h1>
+                        <h1>User Database</h1>
                     </div>
                     <Form>
-
                         <InputGroup>
-
-                            <Form.Select value={searchStatus} onChange={(event) => { setSearchStatus(event.target.value) }}>
-                                <option value="">Search by Status</option>
-                                <option value="wait">Wait for Response</option>
-                                <option value="inprogress">In Progress</option>
-                                <option value="success">Success</option>
-                                <option value="fail">Rejected</option>
-                                <option value="deleted">Deleted</option>
-                            </Form.Select>
-                            <Button onClick={fetchProblem} variant="danger">&#8635;</Button>
+                            <Form.Control border='primary' onChange={(e) => {
+                                setSearchEmail(e.target.value)
+                            }
+                            } value={searchEmail} className="me-auto" placeholder="Search By User Email" />
+                            <Button onClick={getUserInfo} variant="danger">&#8635;</Button>
                         </InputGroup>
                     </Form>
                 </div>
@@ -69,7 +62,7 @@ const AdminDatabase = () => {
                             <Pagination.Item onClick={() => { goPrevPage(1) }}>{searchPage - 1}</Pagination.Item>
                         </>}
 
-                    <Pagination.Item active onClick={fetchProblem}>{searchPage}</Pagination.Item>
+                    <Pagination.Item active onClick={getUserInfo}>{searchPage}</Pagination.Item>
                     <Pagination.Item onClick={() => { goNextPage(1) }}>{searchPage + 1}</Pagination.Item>
 
                     {searchPage + 3 > parseInt((data.length / 20).toFixed(0)) ? <></> :
@@ -87,20 +80,21 @@ const AdminDatabase = () => {
                 <table className="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
                     <thead>
                         <tr>
-                            <th className='justify-content-center text-center'>Report Date</th>
-                            <th className='justify-content-center text-center'>Problem Name</th>
-                            <th className='justify-content-center text-center'>User Email</th>
-                            <th className='justify-content-center text-center'>Status</th>
+                            <th className='justify-content-center text-center'>User ID</th>
+                            <th className='justify-content-center text-center'>Email</th>
+                            <th className='justify-content-center text-center'>Username</th>
+                            <th className='justify-content-center text-center'>FirstName</th>
+                            <th className='justify-content-center text-center'>LastName</th>
+                            <th className='justify-content-center text-center'>Role</th>
                         </tr>
                     </thead>
                     <tbody>
-
-                        {data?.filter(item => {
-                            return item.data().status.includes(searchStatus)
-                        }).slice((searchPage * 20) - 20, searchPage * 20).map((item, index) => {
-                            console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
-                            return <ProblemTable item={item.data()} key={index} fetchy={fetchProblem} />
-                        })}
+                    {data?.filter(item => {
+                        return item.data().email.includes(searchEmail)
+                    }).slice((searchPage * 20) - 20, searchPage * 20).map((item, index) => {
+                        console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
+                        return <UserTable item={item.data()} key={index} fetchy={getUserInfo} />
+                    })}
                     </tbody>
                 </table>
             </Container>
@@ -109,4 +103,4 @@ const AdminDatabase = () => {
     )
 }
 
-export default AdminDatabase
+export default UserDatabase

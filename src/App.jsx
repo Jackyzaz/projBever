@@ -20,6 +20,13 @@ import Test from './pages/test'
 import TagifyWithTemplates from './pages/test'
 import UserProfile from './pages/UserProfile'
 import "./styles.scss" // basic styles for this demo
+import UserDatabase from './pages/UserDatabase'
+import AcademicDashboard from './pages/Department/AcademicDashboard'
+import BuildingDashboard from './pages/Department/BuildingDashboard'
+import FinaceDashboard from './pages/Department/FinaceDashboard'
+import WelfareDashboard from './pages/Department/WelfareDashboard'
+import SCDashboard from './pages/Department/SCDashboard'
+import DirectorDashboard from './pages/Department/DirectorDashboard'
 
 
 function App() {
@@ -31,6 +38,7 @@ function App() {
             <Route path='/signin' element={<Signin />} />
             <Route path='/signup' element={<Signup />} />
             <Route path='/test' element={<Test />} />
+
             <Route path = '/*' element= {<ProtectedRoute/>}>
               <Route path='reportproblem' element={<ReportProblem />} />
               <Route path='dashboard' element={<Dashboard />} />
@@ -44,7 +52,16 @@ function App() {
               <Route path="dashboard" element={<AdminDashboard/>}/>
               <Route path="database" element={<AdminDatabase/>}/>
               <Route path="ranking" element={<AdminRanking/>}/>
+              <Route path="userdb" element={<UserDatabase/>}/>
             </Route>
+            
+            <Route path="academic-dashboard" element={<AcademicDashboard/>}/>
+            <Route path="building-dashboard" element={<BuildingDashboard/>}/>
+            <Route path="welfare-dashboard" element={<WelfareDashboard/>}/>
+            <Route path="finace-dashboard" element={<FinaceDashboard/>}/>
+            <Route path="sc-dashboard" element={<SCDashboard/>}/>
+            <Route path="director-dashboard" element={<DirectorDashboard/>}/>
+
           </Routes>
     </AuthContextProvider>
   )

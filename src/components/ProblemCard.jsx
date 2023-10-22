@@ -11,7 +11,27 @@ const ProblemCard = ({ item }) => {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow = () => {
+    // console.log(`status => ${item.status}`) log ver
+    switch (item.status) {
+      case 'wait':
+        // console.log('set blue') log ver
+        document.documentElement.style.setProperty('--progress', '#0d6efd')
+        break
+      case 'inprogress':
+        // console.log('set yellow') log ver
+        document.documentElement.style.setProperty('--progress', '#ffc107')
+        break
+      case 'success':
+        // console.log('set green') logv er
+        document.documentElement.style.setProperty('--progress', '#198754')
+        break
+      default:
+        // console.log('set red') log ver
+        document.documentElement.style.setProperty('--progress', 'red')
+        break
+    } setShow(true)
+  };
 
   let tagifyTag = ''
   item.problemTags.forEach(element => {
@@ -48,15 +68,18 @@ const ProblemCard = ({ item }) => {
     }
   }
 
+
+
   return (
     <div>
-      <Card className='mt-4 box' border={statusBorder(item.status)}>
+      <Card className='mt-4 box shadow mb-5 bg-white rounded' border={statusBorder(item.status)}>
         <Row>
-          <Col sm={4} md={3} xl={3} >
-            <img className='img-fluid rounded-start' src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.teamgroup.co.th/wp-content/themes/consultix/images/no-image-found-360x260.png'} />
+          <Col sm={6} md={3} xl={3} >
+            <img className='img-fluid rounded' src={(item.imagesURLs[0] !== undefined) ? item.imagesURLs[0] : 'https://www.teamgroup.co.th/wp-content/themes/consultix/images/no-image-found-360x260.png'} />
           </Col>
-          <Col sm={4} md={6} xl={6} className='my-4'>
+          <Col sm={6} md={6} xl={6} className='my-4'>
             <Card.Title className="d-flex justify-content-start">{item.problemName}</Card.Title>
+
             <Card.Subtitle className="text-start text-muted">{item.reportDate.toDate().toLocaleString()}</Card.Subtitle>
             <MixedTags className="my-3 text-start" readOnly value={`${tagifyTag}`} />
             <Card.Text className="text-start">{item.problemInfo}</Card.Text>
@@ -71,6 +94,7 @@ const ProblemCard = ({ item }) => {
           </Col>
         </Row>
       </Card>
+
       <Modal show={show} onHide={handleClose} size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered >
@@ -78,6 +102,10 @@ const ProblemCard = ({ item }) => {
           <Modal.Title style={{ 'fontWeight': 'bold' }}>Problem Info</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <h4 className='text-center' style={{ 'fontWeight': 'bold' }}>Progression</h4>
+          <ProgressLine item={item} status={item.status} />
+          <hr className=''></hr>
+
           <Row>
             <Col sm={2}>
               <p>Problem Name </p>
@@ -138,27 +166,7 @@ const ProblemCard = ({ item }) => {
               </Col>
             </Row>
           </Form.Group>
-          <div className='text-center'>
-            <Plot
-              data={[
-                {
-                  type: 'scatterpolar',
-                  r: [10 - item.problemRate.costs, 10 - item.problemRate.time, item.problemRate.bnf/ 6 * 9],
-                  theta: ['Cost', 'Time', 'Benefits'],
-                  fill: 'toself'
-                },
-              ]}
-              layout={{
-                polar: {
-                  radialaxis: {
-                    visible: true,
-                    range: [0, 9]
-                  }
-                },
-                showlegend: false, width: '3rem', height: 500, title: 'Estimated'
-              }}
-            />
-          </div>
+
         </Modal.Body>
         {item.mts.author ? <ResolveMassage item={item} statusForm={statusForm} /> : ''}
       </Modal>
@@ -180,6 +188,14 @@ const ResolveMassage = ({ item, statusForm }) => {
             <p style={{ 'fontWeight': 'bold' }}>{item.mts.author}</p>
           </Col>
         </Row>
+          <Row>
+            <Col sm={3}>
+              <Form.Label>Department</Form.Label>
+            </Col>
+            <Col sm={9}>
+              <p style={{ 'fontWeight': 'bold' }}>{Departmant(item?.departmant)}</p>
+            </Col>
+          </Row>
         <Row>
           <Col sm={3}>
             <p>Resolve at</p>
@@ -206,6 +222,62 @@ const ResolveMassage = ({ item, statusForm }) => {
           </Col>
         </Row>
       </Modal.Body>
+    </>
+  )
+}
+
+const Departmant = ( departmant ) => {
+  switch (departmant) {
+    case 'academic':
+      return 'ฝ่ายวิชาการ'
+    case 'building':
+      return 'ฝ่ายอาคารสถานที่'
+    case 'welfare':
+      return 'ฝ่ายปกครอง'
+    case 'finace':
+      return 'ฝ่ายการเงิน'
+    case 'sc':
+      return 'Student Council'
+    case 'director':
+      return 'สำนักงานผู้อำนวยการ'
+    default:
+      return ''
+  }
+}
+
+const ProgressLine = ({ item, status }) => {
+
+
+  return (
+    <>
+      <Row className='mt-4'>
+        <Col>
+          <div className="timeline-steps aos-init aos-animate" data-aos="fade-up" >
+            <div className="timeline-step">
+              <div className="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2003">
+                <div className="inner-circle"></div>
+                <p className="h6 mt-3 mb-1">Report Problem</p>
+                <p className="h6 text-muted mb-0 mb-lg-0">{item.reportDate.toDate().toLocaleString()}</p>
+              </div>
+            </div>
+            <div className="timeline-step">
+              <div className="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2004">
+                <div className="inner-circle"></div>
+                <p className="h6 mt-3 mb-1">In Progress</p>
+                <p className="h6  mb-1">{Departmant(item?.departmant)}</p>
+                <p className="h6 text-muted mb-0 mb-lg-0">{!item.initprogress ? 'Waiting for Response' : (item.initprogress.author ? item.initprogress.restime.toDate().toLocaleString() : 'Waiting for Response')}</p>
+              </div>
+            </div>
+            <div className="timeline-step">
+              <div className="timeline-content" data-toggle="popover" data-trigger="hover" data-placement="top" title="" data-content="And here's some amazing content. It's very engaging. Right?" data-original-title="2005">
+                <div className="inner-circle"></div>
+                <p className="h6 mt-3 mb-1">Success</p>
+                <p className="h6 text-muted mb-0 mb-lg-0">{!item.initsuccess ? 'Waiting for Progress' : (item.initsuccess.author ? item.initsuccess.restime.toDate().toLocaleString() : 'Waiting for Progress')}</p>
+              </div>
+            </div>
+          </div>
+        </Col>
+      </Row>
     </>
   )
 }

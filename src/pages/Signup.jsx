@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Container, Form, Button, Modal } from 'react-bootstrap'
 import { UserAuth } from '../contexts/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
+import { collection, doc, setDoc } from 'firebase/firestore'
+import { db } from '../firebase'
 
 const Signup = () => {
   const [email, setEmail] = useState('')
@@ -12,11 +14,22 @@ const Signup = () => {
   const { createUser } = UserAuth();
   const navigate = useNavigate();
 
+  const userCollectionRef = collection(db, "/user_db")
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     try {
       await createUser(email, password)
+      await setDoc(doc(userCollectionRef, email), {
+        firstname: '',
+        lastname: '', 
+        username: '',
+        email: email,
+        uid: '',
+        role: 'member',
+        avatarURLs: '/avatar.png',
+    })
       navigate('/dashboard')
     } catch (e) {
       setError(e.message)
@@ -27,7 +40,7 @@ const Signup = () => {
 
   return (
     <>
-      <Container className='justify-content-center mt-5 w-50'>
+      <Container className='justify-content-center mt-5'>
         <h1 className='text-center mb-3'>Sign Up</h1>
         <Form className='d-grid' onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="formBasicEmail">

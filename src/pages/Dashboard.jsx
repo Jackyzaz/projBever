@@ -13,17 +13,16 @@ const Dashboard = () => {
   const [searchProblem, setSearchProblem] = useState('');
   const [searchStatus, setSearchStatus] = useState('');
 
-
   const navigate = useNavigate();
-
 
   const fetchProblem = useCallback(() => {
     const problemCollectionRef = collection(db, "user_problems")
     const userProblemRef = query(problemCollectionRef, where("author.name", "==", String(user.uid)))
-    getDocs(userProblemRef).then(res => console.log(res.docs[0]))
+    getDocs(userProblemRef)
+    // getDocs(userProblemRef).then(res => console.log(res.docs[0])) log ver
     const getData = async () => {
       const res = await getDocs(userProblemRef)
-      setData(res.docs);
+      setData(res.docs.reverse());
     }
     getData();
   }, [user])
@@ -89,8 +88,6 @@ const Dashboard = () => {
             </Form>
           </div>
 
-
-
         </div>
           {data?.filter(item => {
             return !item.data().status.includes('deleted')
@@ -99,7 +96,7 @@ const Dashboard = () => {
           }).filter(item => {
             return item.data().problemName.includes(searchProblem)
           }).map((item, index) => {
-            console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item)
+            // console.log("🚀 ~ file: Dashboard.jsx:70 ~ {data?.map ~ item:", item) log ver
             return <ProblemCard item={item.data()} key={index} />
           })}
       </Container>

@@ -46,9 +46,9 @@ const GuestButton = () => {
     }
     return (
         <>
-            <Button className='mx-3 mb-1' onClick={handleSubmit1}>Continued as Guest 1</Button>
-            <Button className='mx-3 mb-1' onClick={handleSubmit2}>Continued as Guest 2</Button>
-            <Button className='mx-3 mb-1' onClick={handleSubmit3}>Continued as Guest 3</Button>
+            <Button className='mx-3 mb-3' onClick={handleSubmit1}>Continued as Guest 1</Button>
+            <Button className='mx-3 mb-3' onClick={handleSubmit2}>Continued as Guest 2</Button>
+            <Button className='mx-3 mb-3' onClick={handleSubmit3}>Continued as Guest 3</Button>
         </>
     )
 }

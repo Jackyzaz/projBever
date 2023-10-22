@@ -7,34 +7,31 @@ import { UserAuth } from '../contexts/AuthContext'
 function Home() {
   return (
     <>
-      <div className='bg-primary'>
-        <Row className="py-5 row gx-4 gx-lg-5 justify-content-center">
-          <Col xs={6} className="text-center">
-            <h1 className="text-white mt-0">Welcome to Bever </h1>
-            <hr className='divider divider-light' />
-            <h6 className="text-white mb-4">
-              Web-Application For Complaint And Intelligent Problem Management In Organization
-            </h6>
-            <Button className='mt-3' variant='outline-light' as={Link} to='/SignUp'>Get Started</Button>
-          </Col>
-        </Row>
+      <div className='bg-primary text-center px-3'>
+        <h1 className="pt-5 text-white ">Welcome to Bever </h1>
+        <hr className='divider divider-light' />
+        <h6 className="text-white mb-4 ">
+          Web-Application For Complaint And Intelligent Problem Management In Organization
+        </h6>
+        <Button className='mb-5 mx-auto'
+          variant='outline-light' as={Link} to='/SignUp'>Get Started</Button>
       </div>
       <br></br>
       <Container className='mt-5'>
         <h2 className="text-center mt-0">At User Feature</h2>
         <Row className='justify-content-between my-5'>
           <Col className="text-center mx-2 mb-5" md={3}>
-            <img className='' width={100} src='https://www.linkpicture.com/q/paperplane_1.svg'></img>
+            <img className='' width={100} src='/paper-plane-svgrepo-com.svg'></img>
             <h3 className="h4 my-2">Problem Reporter</h3>
             <p className="text-muted mb-0">Send your Problem to Operator Contribute to helping the organization</p>
           </Col>
           <Col className="text-center mx-2 mb-5" md={3} >
-            <img className='' width={100} src='https://www.linkpicture.com/q/tracker_1.svg'></img>
+            <img className='' width={100} src='/speedometer-svgrepo-com.svg'></img>
             <h3 className="h4 my-2">Track Status</h3>
             <p className="text-muted mb-0">Recognize and Follow your problem status</p>
           </Col>
           <Col className="text-center mx-2 mb-5" md={3} >
-            <img className='' width={100} src='https://www.linkpicture.com/q/admin_1.svg'></img>
+            <img className='' width={100} src='/admin-with-cogwheels-svgrepo-com.svg'></img>
             <h3 className="h4 my-2">Contact With Operator</h3>
             <p className="text-muted mb-0">You can private contact with Operator for fixing problem</p>
           </Col>
