@@ -1,7 +1,0 @@
-export const REACT_APP_FIREBASE_APIKEY = "AIzaSyCdDNMHCQlHS0B_sLe6MEuNRIyirIbfgfk"
-export const REACT_APP_FIREBASE_AUTHDOMAIN = "projbever.firebaseapp.com"
-export const REACT_APP_FIREBASE_PROJECTID = "projbever"
-export const REACT_APP_FIREBASE_STORAGEBUCKET = "projbever.appspot.com"
-export const REACT_APP_FIREBASE_APPID = "1:61471535275:web:32c31b129b1940bf0b07ee"
-export const REACT_APP_FIREBASE_MESSAGINGSENDERID = "61471535275"
-export const REACT_APP_FIREBASE_MEASUREMENTID = "G-KWREWSMC6J"
